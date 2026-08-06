@@ -47,7 +47,7 @@ export class Settings {
   }
 
   onChange(callback) {
-    chrome.storage.sync.onChanged.addListener((changes, areaName) => {
+    chrome.storage.onChanged.addListener((changes, areaName) => {
       if (areaName === 'sync') {
         const simplifiedChanges = {};
         for (const [key, { newValue }] of Object.entries(changes)) {

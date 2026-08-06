@@ -54,9 +54,10 @@ export function getRankProgress(rating) {
 }
 
 export function applyRatingChange(currentRating, spi, mode, kFactor = 32) {
+  const m = (mode || '').toLowerCase();
   let modeMultiplier = 1.0;
-  if (mode === 'learning') modeMultiplier = 0.3;
-  if (mode === 'contest') modeMultiplier = 1.5;
+  if (m === 'learning') modeMultiplier = 0.3;
+  if (m === 'contest') modeMultiplier = 1.5;
   
   const delta = kFactor * (spi - 1.0) * modeMultiplier;
   const newRating = Math.max(0, Math.round(currentRating + delta));

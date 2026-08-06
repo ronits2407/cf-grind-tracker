@@ -212,18 +212,27 @@ export class DB {
   async importAll(dataStr) {
     const data = JSON.parse(dataStr);
     await this.openDB();
+    
+    // Process each store in sequence, but within each store use a single transaction
     for (const storeName of Object.keys(data)) {
-      const store = await this._transaction(storeName, 'readwrite');
-      await new Promise((resolve) => {
+      if (!this.db.objectStoreNames.contains(storeName)) continue;
+      
+      await new Promise((resolve, reject) => {
+        const tx = this.db.transaction(storeName, 'readwrite');
+        const store = tx.objectStore(storeName);
+        
+        // Clear existing data first
         const clearReq = store.clear();
-        clearReq.onsuccess = resolve;
+        clearReq.onsuccess = () => {
+          // Add all items within the same transaction (no await = no yielding)
+          for (const item of data[storeName]) {
+            store.add(item);
+          }
+        };
+        
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
       });
-      for (const item of data[storeName]) {
-        await new Promise((resolve) => {
-          const req = store.add(item);
-          req.onsuccess = resolve;
-        });
-      }
     }
   }
 }

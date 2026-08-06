@@ -13,12 +13,13 @@
 }
 
 body {
-  width: 400px;
-  height: 500px;
+  width: 380px;
+  min-height: 200px;
+  max-height: 500px;
   background-color: var(--val-bg);
   color: var(--val-text);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .container {

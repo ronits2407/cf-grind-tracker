@@ -1,4 +1,4 @@
-// src/content/panel.css
+/* CF Grind Tracker - Inline Panel Styles */
 :root {
   --cfgt-bg: #0F1923;
   --cfgt-surface: #1A2634;
@@ -8,300 +8,316 @@
   --cfgt-yellow: #F1B82D;
   --cfgt-cyan: #3DD2CC;
   --cfgt-blue: #4052FF;
-  --cfgt-violet: #8940FF;
-  --cfgt-orange: #FF8F40;
-  --cfgt-red: #FF4655;
-  --cfgt-gray: #8F9AA6;
+  --cfgt-muted: #7B8794;
 }
 
 #cfgt-panel {
-  width: 100%;
-  margin-top: 20px;
-  background-color: var(--cfgt-bg);
-  border: 1px solid var(--cfgt-accent);
+  background: var(--cfgt-bg);
   color: var(--cfgt-text);
+  border: 1px solid var(--cfgt-accent);
+  margin: 20px 0;
+  padding: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
   position: relative;
-  box-sizing: border-box;
-  padding: 20px;
-  margin-bottom: 30px;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  overflow: hidden;
 }
 
-#cfgt-panel::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background-color: var(--cfgt-accent);
-}
-
+/* Header */
 .cfgt-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--cfgt-surface);
-  padding-bottom: 15px;
-  margin-bottom: 15px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, var(--cfgt-surface), var(--cfgt-bg));
+  border-bottom: 1px solid rgba(255, 70, 85, 0.3);
 }
 
 .cfgt-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  letter-spacing: 2px;
+  font-weight: 700;
+  font-size: 14px;
   text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  letter-spacing: 2px;
+  color: var(--cfgt-text);
 }
 
 .cfgt-logo {
   color: var(--cfgt-accent);
-  font-size: 1.5rem;
+  margin-right: 6px;
+  font-size: 16px;
 }
 
 .cfgt-tabs {
   display: flex;
-  gap: 10px;
+  gap: 4px;
 }
 
 .cfgt-tab {
-  background-color: var(--cfgt-surface);
-  color: var(--cfgt-text);
-  border: none;
-  padding: 8px 16px;
-  font-weight: bold;
+  background: var(--cfgt-surface);
+  color: var(--cfgt-muted);
+  border: 1px solid transparent;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   cursor: pointer;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
   transition: all 0.2s ease;
-  border-left: 2px solid transparent;
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
 }
 
 .cfgt-tab:hover {
-  background-color: #243447;
+  color: var(--cfgt-text);
+  border-color: var(--cfgt-muted);
 }
 
 .cfgt-tab.active {
-  background-color: rgba(255, 70, 85, 0.1);
-  color: var(--cfgt-accent);
-  border-left: 2px solid var(--cfgt-accent);
+  background: var(--cfgt-accent);
+  color: #fff;
+  border-color: var(--cfgt-accent);
 }
 
+/* Problem Info */
 .cfgt-problem-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  background-color: var(--cfgt-surface);
-  padding: 15px;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  padding: 10px 16px;
+  background: rgba(26, 38, 52, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .cfgt-problem-name {
-  font-size: 1.1rem;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 14px;
+  margin-right: 8px;
 }
 
 .cfgt-badge {
-  padding: 4px 10px;
-  border-radius: 2px;
-  font-weight: bold;
-  font-size: 0.85rem;
   display: inline-block;
-  margin-left: 10px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
-.cfgt-rating-gray { background-color: var(--cfgt-surface); color: var(--cfgt-gray); border: 1px solid var(--cfgt-gray); }
-.cfgt-rating-green { background-color: rgba(79, 255, 190, 0.1); color: var(--cfgt-green); border: 1px solid var(--cfgt-green); }
-.cfgt-rating-cyan { background-color: rgba(61, 210, 204, 0.1); color: var(--cfgt-cyan); border: 1px solid var(--cfgt-cyan); }
-.cfgt-rating-blue { background-color: rgba(64, 82, 255, 0.1); color: var(--cfgt-blue); border: 1px solid var(--cfgt-blue); }
-.cfgt-rating-violet { background-color: rgba(137, 64, 255, 0.1); color: var(--cfgt-violet); border: 1px solid var(--cfgt-violet); }
-.cfgt-rating-orange { background-color: rgba(255, 143, 64, 0.1); color: var(--cfgt-orange); border: 1px solid var(--cfgt-orange); }
-.cfgt-rating-red { background-color: rgba(255, 70, 85, 0.1); color: var(--cfgt-red); border: 1px solid var(--cfgt-red); }
-
-.cfgt-confidence-high { border-left: 3px solid var(--cfgt-green); }
-.cfgt-confidence-medium { border-left: 3px solid var(--cfgt-yellow); }
-.cfgt-confidence-low { border-left: 3px solid var(--cfgt-orange); }
+.cfgt-rating-gray { background: #808080; color: #fff; }
+.cfgt-rating-green { background: #008000; color: #fff; }
+.cfgt-rating-cyan { background: #03a89e; color: #fff; }
+.cfgt-rating-blue { background: #0000ff; color: #fff; }
+.cfgt-rating-violet { background: #aa00aa; color: #fff; }
+.cfgt-rating-orange { background: #ff8c00; color: #fff; }
+.cfgt-rating-red { background: #cc0000; color: #fff; }
 
 .cfgt-stats-preview {
-  font-size: 0.9rem;
-  color: var(--cfgt-gray);
-  display: flex;
-  align-items: center;
-  gap: 15px;
+  font-size: 12px;
+  color: var(--cfgt-muted);
 }
 
+.cfgt-confidence-high .cfgt-stats-preview::after { content: ' ● HIGH'; color: var(--cfgt-green); font-weight: 700; font-size: 10px; }
+.cfgt-confidence-medium .cfgt-stats-preview::after { content: ' ● MED'; color: var(--cfgt-yellow); font-weight: 700; font-size: 10px; }
+.cfgt-confidence-low .cfgt-stats-preview::after { content: ' ● LOW'; color: var(--cfgt-accent); font-weight: 700; font-size: 10px; }
+
+/* Timer Section */
 .cfgt-timer-section {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 25px;
+  align-items: center;
+  padding: 16px;
+}
+
+.cfgt-status {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--cfgt-muted);
+  margin-bottom: 4px;
 }
 
 .cfgt-timer {
   font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 3.5rem;
-  font-weight: bold;
+  font-size: 2.5rem;
+  font-weight: 700;
   color: var(--cfgt-text);
   letter-spacing: 2px;
+  transition: color 0.3s;
 }
 
 .cfgt-timer.running {
-  text-shadow: 0 0 10px rgba(236, 232, 225, 0.3);
+  color: var(--cfgt-green);
+  animation: cfgt-pulse 2s infinite;
 }
 
-.cfgt-status {
-  font-size: 0.9rem;
-  color: var(--cfgt-accent);
-  text-transform: uppercase;
-  font-weight: bold;
-  letter-spacing: 1px;
+@keyframes cfgt-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 .cfgt-wa-counter {
-  background-color: rgba(255, 70, 85, 0.15);
-  border: 1px solid var(--cfgt-accent);
-  padding: 10px 20px;
-  font-size: 1.2rem;
-  font-weight: bold;
+  background: rgba(255, 70, 85, 0.15);
+  border: 1px solid rgba(255, 70, 85, 0.3);
+  padding: 8px 14px;
+  border-radius: 2px;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--cfgt-accent);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  transition: transform 0.2s;
 }
 
 .cfgt-wa-counter.pulse {
-  animation: pulse-red 1s ease-in-out;
+  animation: cfgt-wa-pulse 0.5s ease;
 }
 
-@keyframes pulse-red {
-  0% { box-shadow: 0 0 0 0 rgba(255, 70, 85, 0.7); }
-  70% { box-shadow: 0 0 0 15px rgba(255, 70, 85, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 70, 85, 0); }
+@keyframes cfgt-wa-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); background: rgba(255, 70, 85, 0.3); }
+  100% { transform: scale(1); }
 }
 
+/* Controls */
 .cfgt-controls {
   display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 8px;
+  padding: 0 16px 16px;
 }
 
 .cfgt-btn {
-  padding: 12px 24px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  text-transform: uppercase;
+  padding: 10px 24px;
   border: none;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
   cursor: pointer;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--cfgt-bg);
+  transition: all 0.2s ease;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
 }
 
 .cfgt-btn:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .cfgt-btn-start {
-  background-color: var(--cfgt-green);
-}
-.cfgt-btn-start:hover {
-  box-shadow: 0 5px 15px rgba(79, 255, 190, 0.4);
+  background: var(--cfgt-green);
+  color: #0F1923;
+  flex: 1;
 }
 
-.cfgt-btn-end {
-  background-color: var(--cfgt-accent);
-}
-.cfgt-btn-end:hover {
-  box-shadow: 0 5px 15px rgba(255, 70, 85, 0.4);
+.cfgt-btn-start:hover {
+  background: #6fffce;
+  box-shadow: 0 0 20px rgba(79, 255, 190, 0.3);
 }
 
 .cfgt-btn-pause {
-  background-color: var(--cfgt-yellow);
+  background: var(--cfgt-yellow);
+  color: #0F1923;
 }
 
+.cfgt-btn-end {
+  background: var(--cfgt-accent);
+  color: #fff;
+  flex: 1;
+}
+
+.cfgt-btn-end:hover {
+  background: #ff5e6b;
+  box-shadow: 0 0 20px rgba(255, 70, 85, 0.3);
+}
+
+.cfgt-btn-submit {
+  background: var(--cfgt-green);
+  color: #0F1923;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.cfgt-btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.cfgt-hidden {
+  display: none !important;
+}
+
+/* SPI Preview */
 .cfgt-spi-preview {
-  background-color: var(--cfgt-surface);
-  padding: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  padding: 8px 16px;
+  background: rgba(26, 38, 52, 0.5);
+  font-size: 13px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .cfgt-spi-value {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--cfgt-cyan);
+  color: var(--cfgt-green);
+  font-weight: 700;
+  font-size: 15px;
 }
 
 .cfgt-rating-change {
-  font-size: 1.2rem;
-  font-weight: bold;
+  font-weight: 700;
+  font-size: 14px;
 }
+
 .cfgt-rating-change.positive { color: var(--cfgt-green); }
 .cfgt-rating-change.negative { color: var(--cfgt-accent); }
-.cfgt-rating-change.neutral { color: var(--cfgt-gray); }
+.cfgt-rating-change.neutral { color: var(--cfgt-muted); }
 
-.cfgt-footer {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid var(--cfgt-surface);
+/* Footer / Checkboxes */
+#cfgt-footer {
   display: none;
+  padding: 16px;
+  border-top: 1px solid rgba(255, 70, 85, 0.2);
+  background: rgba(26, 38, 52, 0.8);
 }
 
 .cfgt-checkboxes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 4px;
 }
 
 .cfgt-checkbox-label {
+  font-size: 12px;
+  color: var(--cfgt-text);
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  background-color: var(--cfgt-surface);
-  padding: 8px 12px;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
-  transition: background-color 0.2s;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 2px;
+  transition: background 0.2s;
 }
 
 .cfgt-checkbox-label:hover {
-  background-color: #243447;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .cfgt-checkbox {
   accent-color: var(--cfgt-accent);
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
-.cfgt-btn-submit {
-  background-color: var(--cfgt-cyan);
-  width: 100%;
-  justify-content: center;
-}
-
+/* Success Banner */
 .cfgt-success-banner {
-  background: linear-gradient(90deg, rgba(79, 255, 190, 0.1) 0%, rgba(79, 255, 190, 0.2) 100%);
-  border-left: 4px solid var(--cfgt-green);
-  padding: 15px;
-  margin-top: 20px;
   display: none;
-  animation: slide-in 0.3s ease-out;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(79, 255, 190, 0.15), rgba(79, 255, 190, 0.05));
+  border-top: 2px solid var(--cfgt-green);
+  color: var(--cfgt-green);
+  font-size: 13px;
+  animation: cfgt-slide-in 0.3s ease;
 }
 
-@keyframes slide-in {
-  from { opacity: 0; transform: translateY(-10px); }
+@keyframes cfgt-slide-in {
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
-.cfgt-hidden { display: none !important; }

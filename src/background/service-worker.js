@@ -44,11 +44,10 @@ async function checkSubmissions() {
 
     for (const sub of data.result) {
       if (
-        (sub.problem.contestId == currentSolve.contestId && sub.problem.index === currentSolve.problemIndex) ||
-        (sub.problem.name === currentSolve.problemId)
+        sub.problem.contestId == currentSolve.contestId && sub.problem.index === currentSolve.problemIndex
       ) {
-        // It's for the current problem
-        if (sub.creationTimeMs >= currentSolve.startTime) {
+        // It's for the current problem — CF API uses creationTimeSeconds (not Ms)
+        if ((sub.creationTimeSeconds * 1000) >= currentSolve.startTime) {
           if (sub.verdict === 'OK') {
             foundAC = true;
           } else if (['WRONG_ANSWER', 'TIME_LIMIT_EXCEEDED', 'MEMORY_LIMIT_EXCEEDED', 'RUNTIME_ERROR', 'COMPILATION_ERROR'].includes(sub.verdict)) {

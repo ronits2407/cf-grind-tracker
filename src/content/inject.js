@@ -2,7 +2,7 @@
 
 function init() {
   const url = window.location.href;
-  if (!url.includes('codeforces.com/problemset/problem/') && !url.includes('codeforces.com/contest/')) {
+  if (!url.includes('codeforces.com/problemset/problem/') && !url.includes('codeforces.com/contest/') && !url.includes('codeforces.com/gym/')) {
     return;
   }
 
