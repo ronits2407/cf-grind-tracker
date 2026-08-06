@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     
     document.getElementById('btnSettings').addEventListener('click', () => {
-      chrome.tabs.create({ url: chrome.runtime.getURL('src/options/options.html') });
+      chrome.tabs.create({ url: chrome.runtime.getURL('src/dashboard/dashboard.html') + '#settings' });
     });
   }
 });

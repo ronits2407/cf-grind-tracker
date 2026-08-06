@@ -29,12 +29,12 @@ window.cfgtState = {
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Try to load real data if available
+  // Load real rating/rank from chrome.storage.sync (where settings.js writes)
   try {
-    const data = await chrome.storage.local.get(['cf_rating', 'cf_rank']);
-    if (data.cf_rating) window.cfgtState.rating = data.cf_rating;
-    if (data.cf_rank) window.cfgtState.rank = data.cf_rank;
+    const data = await new Promise(resolve => chrome.storage.sync.get(['rating', 'mode'], resolve));
+    if (data.rating) window.cfgtState.rating = data.rating;
   } catch (e) {
-    console.log('Not in extension context, using mock data.');
+    console.log('Not in extension context, using default data.');
   }
 
   updateSidebar();

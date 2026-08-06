@@ -25,7 +25,7 @@
         "*://codeforces.com/contest/*/problem/*",
         "*://codeforces.com/gym/*/problem/*"
       ],
-      "js": ["src/content/inject.js"],
+      "js": ["src/content/panel.js", "src/content/inject.js"],
       "css": ["src/content/panel.css"]
     }
   ],
@@ -33,14 +33,14 @@
     "default_popup": "src/popup/popup.html"
   },
   "icons": {
-    "16": "src/assets/icons/icon16.png",
-    "48": "src/assets/icons/icon48.png",
-    "128": "src/assets/icons/icon128.png"
+    "16": "src/assets/icons/icon16.svg",
+    "48": "src/assets/icons/icon48.svg",
+    "128": "src/assets/icons/icon128.svg"
   },
   "web_accessible_resources": [
     {
-      "resources": ["src/content/*", "src/assets/*"],
-      "matches": ["*://codeforces.com/*"]
+      "resources": ["src/content/*", "src/assets/*", "src/dashboard/*"],
+      "matches": ["*://codeforces.com/*", "<all_urls>"]
     }
   ]
 }

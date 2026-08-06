@@ -9,10 +9,17 @@ const db = new DB();
 const settings = new Settings();
 let currentSolve = null;
 
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.alarms.create('submission-poll', { periodInMinutes: 0.5 });
-  chrome.alarms.create('friend-poll', { periodInMinutes: 1 });
-});
+function setupAlarms() {
+  chrome.alarms.get('submission-poll', (alarm) => {
+    if (!alarm) chrome.alarms.create('submission-poll', { periodInMinutes: 0.5 });
+  });
+  chrome.alarms.get('friend-poll', (alarm) => {
+    if (!alarm) chrome.alarms.create('friend-poll', { periodInMinutes: 1 });
+  });
+}
+
+chrome.runtime.onInstalled.addListener(setupAlarms);
+chrome.runtime.onStartup.addListener(setupAlarms);
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === 'submission-poll' && currentSolve) {

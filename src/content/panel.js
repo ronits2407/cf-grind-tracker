@@ -134,18 +134,19 @@ window.CFGT_Panel = {
 
     // Listen for Service Worker messages
     chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-      if (msg.type === 'SUBMISSION_UPDATE') {
-        this.data.wrongCount = msg.wrongCount;
+      // Handle both UPDATE_WA (from service worker) and SUBMISSION_UPDATE
+      if (msg.type === 'UPDATE_WA' || msg.type === 'SUBMISSION_UPDATE') {
+        this.data.wrongCount = msg.wrongSubmissions || msg.wrongCount || 0;
         this.updateDisplay();
         const waDisplay = this.panelEl.querySelector('#cfgt-wa-display');
         waDisplay.classList.remove('pulse');
         void waDisplay.offsetWidth; // trigger reflow
         waDisplay.classList.add('pulse');
-        
-        if (msg.accepted && this.data.status === 'SOLVING') {
-          this.endSolve();
-        }
       } else if (msg.type === 'AUTO_COMPLETE' && this.data.status === 'SOLVING') {
+        // Auto-detected AC from service worker
+        if (msg.wrongSubmissions !== undefined) {
+          this.data.wrongCount = msg.wrongSubmissions;
+        }
         this.endSolve();
       }
     });
@@ -161,13 +162,14 @@ window.CFGT_Panel = {
         });
       }
     });
-    // Can fetch avgTime from background here
-    chrome.runtime.sendMessage({ type: 'GET_STATS', rating: this.data.rating }, (response) => {
+    // Fetch avg solve time from background service worker
+    chrome.runtime.sendMessage({ type: 'GET_AVG_SOLVE_TIME', payload: { rating: this.data.rating } }, (response) => {
+      if (chrome.runtime.lastError) return; // extension context may not be ready
       if (response && response.avgTime) {
-        this.data.avgTime = response.avgTime;
+        this.data.avgTime = response.avgTime / 1000; // convert ms to seconds
         const mins = Math.floor(this.data.avgTime / 60);
-        const secs = this.data.avgTime % 60;
-        this.panelEl.querySelector('#cfgt-avg-time').textContent = \`\${mins}:\${secs.toString().padStart(2, '0')}\`;
+        const secs = Math.floor(this.data.avgTime % 60);
+        this.panelEl.querySelector('#cfgt-avg-time').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
       }
     });
   },
@@ -189,8 +191,15 @@ window.CFGT_Panel = {
     }, 1000);
     
     chrome.runtime.sendMessage({ 
-      type: 'START_TRACKING', 
-      problemData: this.problemData
+      type: 'START_SOLVE', 
+      payload: {
+        problemId: `${this.problemData.contestId}${this.problemData.index}`,
+        contestId: this.problemData.contestId,
+        problemIndex: this.problemData.index,
+        rating: this.problemData.rating,
+        mode: this.data.mode,
+        startTime: this.data.startTime
+      }
     });
     
     this.updateDisplay();
@@ -229,19 +238,31 @@ window.CFGT_Panel = {
     const isSol = this.panelEl.querySelector('#chk-sol').checked;
     const isAi = this.panelEl.querySelector('#chk-ai').checked;
     
-    const record = {
-      problem: this.problemData,
-      mode: this.data.mode,
-      timeSeconds: this.data.elapsedSeconds,
-      wrongCount: this.data.wrongCount,
-      helpFlags: { isIndep, isTut, isSol, isAi },
-      timestamp: Date.now()
+    const payload = {
+      problemData: {
+        problemId: `${this.problemData.contestId}${this.problemData.index}`,
+        contestId: this.problemData.contestId,
+        problemIndex: this.problemData.index,
+        rating: this.problemData.rating || 1200,
+        title: this.problemData.title,
+        tags: this.problemData.tags || [],
+        mode: this.data.mode
+      },
+      solveData: {
+        solveTime: this.data.elapsedSeconds * 1000, // ms
+        wrongSubmissions: this.data.wrongCount,
+        aiUsed: isAi,
+        tutorialUsed: isTut,
+        othersUsed: isSol,
+        independent: isIndep,
+        timestamp: Date.now()
+      }
     };
     
     this.panelEl.querySelector('#cfgt-btn-submit').disabled = true;
     this.panelEl.querySelector('#cfgt-btn-submit').textContent = 'SUBMITTING...';
     
-    chrome.runtime.sendMessage({ type: 'COMPLETE_SOLVE', record }, (response) => {
+    chrome.runtime.sendMessage({ type: 'COMPLETE_SOLVE', payload }, (response) => {
       this.panelEl.querySelector('#cfgt-footer').style.display = 'none';
       const banner = this.panelEl.querySelector('#cfgt-success-banner');
       banner.style.display = 'block';
@@ -249,8 +270,8 @@ window.CFGT_Panel = {
       if (response && response.spi !== undefined) {
         this.panelEl.querySelector('#cfgt-final-spi').textContent = response.spi.toFixed(2);
         const deltaEl = this.panelEl.querySelector('#cfgt-final-rating');
-        const delta = response.ratingChange;
-        deltaEl.textContent = (delta >= 0 ? '+' : '') + delta;
+        const delta = response.ratingUpdate ? response.ratingUpdate.delta : 0;
+        deltaEl.textContent = (delta >= 0 ? '+' : '') + Math.round(delta);
         deltaEl.className = delta >= 0 ? 'cfgt-rating-change positive' : 'cfgt-rating-change negative';
       }
     });
@@ -267,9 +288,9 @@ window.CFGT_Panel = {
     // Status
     this.panelEl.querySelector('#cfgt-status-text').textContent = 'STATUS: ' + this.data.status;
     
-    // WA Count
+    // WA Count — 20 min penalty per WA (ICPC style)
     this.panelEl.querySelector('#cfgt-wa-count').textContent = this.data.wrongCount;
-    this.panelEl.querySelector('#cfgt-penalty-time').textContent = this.data.wrongCount * 10;
+    this.panelEl.querySelector('#cfgt-penalty-time').textContent = this.data.wrongCount * 20;
     
     this.updateSPI();
   },
