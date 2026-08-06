@@ -59,7 +59,10 @@ async function loadStats() {
     const res = await fetch(`https://codeforces.com/api/user.info?handles=${handle}`);
     const data = await res.json();
     if (data.status === 'OK' && data.result.length > 0) {
-      const avatarUrl = data.result[0].titlePhoto || data.result[0].avatar;
+      let avatarUrl = data.result[0].titlePhoto || data.result[0].avatar;
+      if (avatarUrl && avatarUrl.startsWith('//')) {
+        avatarUrl = 'https:' + avatarUrl;
+      }
       badge.style.backgroundImage = `url(${avatarUrl})`;
       badge.style.backgroundSize = 'cover';
       badge.style.backgroundPosition = 'center';
