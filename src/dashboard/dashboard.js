@@ -37,10 +37,9 @@ window.cfgtState = {
 
 document.addEventListener('DOMContentLoaded', async () => {
   await db.openDB();
-  await settings.load();
 
-  window.cfgtState.rating = settings.get('rating') || 1200;
-  window.cfgtState.rank = getRank(window.cfgtState.rating);
+  window.cfgtState.rating = (await settings.get('rating')) || 1200;
+  window.cfgtState.rank = getRank(window.cfgtState.rating).name;
 
   updateSidebar();
 
