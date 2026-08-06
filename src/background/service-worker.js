@@ -115,8 +115,8 @@ async function checkFriendsActivity() {
           const isAC = latestSub.verdict === 'OK';
           
           const title = isAC 
-            ? (isMe ? 'You Solved a Problem!' : 'Friend Solved a Problem')
-            : (isMe ? 'Submission Failed' : 'Friend Submission Failed');
+            ? (isMe ? 'You Solved a Problem!' : `${friend} Solved a Problem!`)
+            : (isMe ? 'Submission Failed' : `${friend} Submission Failed`);
             
           const verdictStr = isAC ? 'AC' : latestSub.verdict;
           const body = isMe 
