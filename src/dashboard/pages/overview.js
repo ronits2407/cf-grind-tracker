@@ -77,7 +77,7 @@ export default {
     const currentRating = (await settings.get('rating')) || 1200;
     
     // Setup rank info
-    const rankName = getRank(currentRating);
+    const rankName = getRank(currentRating).name;
     const progress = getRankProgress(currentRating);
     
     document.getElementById('overview-rank-name').textContent = rankName;
