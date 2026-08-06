@@ -18,6 +18,7 @@ const html = `
   <div style="display:flex; gap:10px; margin-top:10px; align-items:center;">
     <label style="width: 150px;">Ntfy Topic:</label>
     <input type="text" id="setting-ntfy" class="val-input" style="flex:1;" placeholder="e.g. cf-grind-gzn84omyxtxx">
+    <button id="btn-test-ntfy" class="btn btn-secondary">Test</button>
   </div>
   <div style="display:flex; gap:10px; margin-top:15px; align-items:center;">
     <label style="width: 150px;">Browser Notifications:</label>
@@ -146,6 +147,20 @@ function init() {
         }
         alert('Data cleared. Please reload the extension.');
       }
+    }
+  });
+
+  addListener(document.getElementById('btn-test-ntfy'), 'click', () => {
+    const topic = document.getElementById('setting-ntfy').value.trim();
+    if (topic && chrome && chrome.runtime) {
+      chrome.runtime.sendMessage({
+        type: 'SEND_NTFY',
+        title: 'Test Notification',
+        body: 'CF Grind Tracker push notifications are working!'
+      });
+      alert('Test push sent! Check your phone.');
+    } else {
+      alert('Please enter a valid Ntfy topic first.');
     }
   });
 }
