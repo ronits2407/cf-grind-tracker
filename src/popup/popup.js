@@ -55,6 +55,20 @@ async function loadStats() {
   badge.style.backgroundColor = rank.color;
   badge.style.boxShadow = `0 0 15px ${rank.color}80`;
 
+  try {
+    const res = await fetch(`https://codeforces.com/api/user.info?handles=${handle}`);
+    const data = await res.json();
+    if (data.status === 'OK' && data.result.length > 0) {
+      const avatarUrl = data.result[0].titlePhoto || data.result[0].avatar;
+      badge.style.backgroundImage = `url(${avatarUrl})`;
+      badge.style.backgroundSize = 'cover';
+      badge.style.backgroundPosition = 'center';
+      badge.textContent = ''; // clear text if image loads
+    }
+  } catch (e) {
+    console.error('Failed to fetch avatar', e);
+  }
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
