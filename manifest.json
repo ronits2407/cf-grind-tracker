@@ -33,9 +33,9 @@
     "default_popup": "src/popup/popup.html"
   },
   "icons": {
-    "16": "src/assets/icons/icon.jpg",
-    "48": "src/assets/icons/icon.jpg",
-    "128": "src/assets/icons/icon.jpg"
+    "16": "src/assets/icons/icon.png",
+    "48": "src/assets/icons/icon.png",
+    "128": "src/assets/icons/icon.png"
   },
   "web_accessible_resources": [
     {
