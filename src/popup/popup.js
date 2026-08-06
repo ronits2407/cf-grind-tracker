@@ -46,6 +46,12 @@ async function loadStats() {
   document.getElementById('rankName').textContent = rank.name;
   
   const badge = document.getElementById('rankBadge');
+  
+  const rankParts = rank.name.split(' ');
+  let badgeText = rankParts[0].charAt(0);
+  if (rankParts.length > 1) badgeText += rankParts[1];
+  
+  badge.textContent = badgeText;
   badge.style.backgroundColor = rank.color;
   badge.style.boxShadow = `0 0 15px ${rank.color}80`;
 
