@@ -185,9 +185,9 @@ function endContest() {
 function setPreset(preset, btnId) {
   currentPreset = preset;
   document.querySelectorAll('.preset-btns button').forEach(b => {
-    b.className = 'val-btn-outline';
+    b.className = 'btn btn-secondary';
   });
-  document.getElementById(btnId).className = 'val-btn';
+  document.getElementById(btnId).className = 'btn btn-primary';
   document.getElementById('custom-contest-opts').style.display = preset === 'CUSTOM' ? 'block' : 'none';
 }
 

@@ -38,19 +38,19 @@ function addListener(el, type, handler) {
 
 function switchTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-  document.querySelectorAll('.practice-tabs button').forEach(el => el.className = 'val-btn-outline');
+  document.querySelectorAll('.practice-tabs button').forEach(el => el.className = 'btn btn-secondary');
   
   if (tabId === 'rec') {
     document.getElementById('content-rec').style.display = 'block';
-    document.getElementById('tab-rec').className = 'val-btn';
+    document.getElementById('tab-rec').className = 'btn btn-primary';
     loadRecommendations();
   } else if (tabId === 'lad') {
     document.getElementById('content-lad').style.display = 'block';
-    document.getElementById('tab-lad').className = 'val-btn';
+    document.getElementById('tab-lad').className = 'btn btn-primary';
     renderLadders();
   } else if (tabId === 'queue') {
     document.getElementById('content-queue').style.display = 'block';
-    document.getElementById('tab-queue').className = 'val-btn';
+    document.getElementById('tab-queue').className = 'btn btn-primary';
     renderQueue();
   }
 }
