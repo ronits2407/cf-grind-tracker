@@ -2,8 +2,7 @@ export async function sendNtfyNotification(topic, title, body, url = null) {
   if (!topic) return;
   const headers = {
     'Title': title,
-    'Priority': 'default',
-    'Tags': 'bell'
+    'Priority': 'default'
   };
   
   if (url) {

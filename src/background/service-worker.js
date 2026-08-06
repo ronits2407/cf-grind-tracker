@@ -123,14 +123,9 @@ async function checkFriendsActivity() {
           const isMe = friend === myHandle;
           const isAC = latestSub.verdict === 'OK';
           
-          const title = isAC 
-            ? (isMe ? 'You Solved a Problem!' : `${friend} Solved a Problem!`)
-            : (isMe ? 'Submission Failed' : `${friend} Submission Failed`);
-            
+          const title = friend;
           const verdictStr = isAC ? 'AC' : latestSub.verdict;
-          const body = isMe 
-            ? `${verdictStr} on ${latestSub.problem.name}` 
-            : `${friend} ${verdictStr} on ${latestSub.problem.name}`;
+          const body = `${verdictStr} on ${latestSub.problem.name}`;
           
           showBrowserNotification(title, body);
           const phoneNtfy = await settings.get('phoneNotifications');
