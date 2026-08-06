@@ -2,8 +2,8 @@ const html = `
 <div class="page-header">
   <h2>Problem History</h2>
   <div class="header-actions">
-    <button id="export-json-btn" class="val-btn">Export JSON</button>
-    <button id="export-pdf-btn" class="val-btn-outline">Export PDF</button>
+    <button id="export-json-btn" class="btn btn-primary">Export JSON</button>
+    <button id="export-pdf-btn" class="btn btn-secondary">Export PDF</button>
   </div>
 </div>
 <div class="history-controls val-panel">
@@ -49,9 +49,9 @@ const html = `
   </div>
 </div>
 <div class="pagination-controls">
-  <button id="page-prev" class="val-btn-outline">Previous</button>
+  <button id="page-prev" class="btn btn-secondary">Previous</button>
   <span id="page-info">Page 1 of 1</span>
-  <button id="page-next" class="val-btn-outline">Next</button>
+  <button id="page-next" class="btn btn-secondary">Next</button>
 </div>
 `;
 

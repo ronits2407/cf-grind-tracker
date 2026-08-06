@@ -74,7 +74,7 @@ export default {
   init: async () => {
     const db = window.cfgtDB;
     const settings = window.cfgtSettings;
-    const currentRating = settings.get('rating') || 1200;
+    const currentRating = (await settings.get('rating')) || 1200;
     
     // Setup rank info
     const rankName = getRank(currentRating);

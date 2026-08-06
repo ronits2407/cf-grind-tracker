@@ -4,9 +4,9 @@ const html = `
 </div>
 
 <div class="val-panel practice-tabs" style="display:flex; gap: 10px; margin-bottom: 20px;">
-  <button id="tab-rec" class="val-btn">Recommended</button>
-  <button id="tab-lad" class="val-btn-outline">Ladders</button>
-  <button id="tab-queue" class="val-btn-outline">My Queue</button>
+  <button id="tab-rec" class="btn btn-primary">Recommended</button>
+  <button id="tab-lad" class="btn btn-secondary">Ladders</button>
+  <button id="tab-queue" class="btn btn-secondary">My Queue</button>
 </div>
 
 <div id="content-rec" class="tab-content" style="display:block;">
@@ -73,7 +73,7 @@ async function loadRecommendations() {
               <span class="rating-badge" style="margin-left:10px;">${p.rating || '?'}</span>
               <div style="font-size:0.8em; color:gray; margin-top:5px;">${p.tags.join(', ')}</div>
             </div>
-            <button class="val-btn-outline queue-add-btn" data-id="${p.contestId}-${p.index}" data-name="${p.name}">+ Queue</button>
+            <button class="btn btn-secondary queue-add-btn" data-id="${p.contestId}-${p.index}" data-name="${p.name}">+ Queue</button>
           </div>
         `;
       });
@@ -109,7 +109,7 @@ function renderLadders() {
     ll.innerHTML += `
       <div class="val-panel">
         <h4>${l.title}</h4>
-        <button class="val-btn" style="margin-top:10px;">Start Ladder</button>
+        <button class="btn btn-primary" style="margin-top:10px;">Start Ladder</button>
       </div>
     `;
   });
@@ -127,7 +127,7 @@ function renderQueue() {
     ql.innerHTML += `
       <div class="val-panel" style="display:flex; justify-content:space-between;">
         <span>${q.name} (${q.id})</span>
-        <button class="val-btn-outline remove-queue-btn" data-idx="${idx}">Remove</button>
+        <button class="btn btn-secondary remove-queue-btn" data-idx="${idx}">Remove</button>
       </div>
     `;
   });

@@ -8,7 +8,7 @@ const html = `
   <div style="display:flex; gap:10px; margin-top:10px; align-items:center;">
     <label style="width: 150px;">Codeforces Handle:</label>
     <input type="text" id="setting-handle" class="val-input" style="flex:1;">
-    <button id="btn-validate-handle" class="val-btn">Validate</button>
+    <button id="btn-validate-handle" class="btn btn-primary">Validate</button>
   </div>
   <div id="handle-validation-msg" style="margin-top:10px; font-size:0.9em;"></div>
 </div>
@@ -40,8 +40,8 @@ const html = `
 <div class="val-panel settings-section" style="margin-top: 20px;">
   <h3>Data Management</h3>
   <div style="display:flex; gap: 15px; margin-top:15px;">
-    <button id="btn-export-data" class="val-btn">Export All Data</button>
-    <button id="btn-reset-data" class="val-btn-outline" style="border-color:#FF4655; color:#FF4655;">Reset Extension Data</button>
+    <button id="btn-export-data" class="btn btn-primary">Export All Data</button>
+    <button id="btn-reset-data" class="btn btn-secondary" style="border-color:#FF4655; color:#FF4655;">Reset Extension Data</button>
   </div>
 </div>
 `;

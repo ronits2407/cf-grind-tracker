@@ -6,10 +6,10 @@ const html = `
 <div class="val-panel contest-generator">
   <h3>Generate Contest</h3>
   <div class="preset-btns" style="margin-bottom: 15px; display:flex; gap:10px;">
-    <button id="btn-preset-div3" class="val-btn">DIV3 (6)</button>
-    <button id="btn-preset-div2" class="val-btn">DIV2 (5)</button>
-    <button id="btn-preset-div1" class="val-btn">DIV1 (5)</button>
-    <button id="btn-preset-custom" class="val-btn-outline">Custom</button>
+    <button id="btn-preset-div3" class="btn btn-primary">DIV3 (6)</button>
+    <button id="btn-preset-div2" class="btn btn-primary">DIV2 (5)</button>
+    <button id="btn-preset-div1" class="btn btn-primary">DIV1 (5)</button>
+    <button id="btn-preset-custom" class="btn btn-secondary">Custom</button>
   </div>
   
   <div id="custom-contest-opts" style="display:none; margin-bottom: 15px;">
@@ -24,8 +24,8 @@ const html = `
     <!-- Preview problems -->
   </div>
   
-  <button id="btn-gen-contest" class="val-btn" style="margin-top:20px; width:100%;">GENERATE PROBLEMS</button>
-  <button id="btn-start-contest" class="val-btn" style="margin-top:10px; width:100%; display:none; background-color:#4FFFBE; color:#0F1923;">START CONTEST</button>
+  <button id="btn-gen-contest" class="btn btn-primary" style="margin-top:20px; width:100%;">GENERATE PROBLEMS</button>
+  <button id="btn-start-contest" class="btn btn-primary" style="margin-top:10px; width:100%; display:none; background-color:#4FFFBE; color:#0F1923;">START CONTEST</button>
 </div>
 
 <div class="val-panel active-contest-panel" style="margin-top: 30px; display:none;" id="active-contest-panel">
@@ -43,7 +43,7 @@ const html = `
     </thead>
     <tbody id="active-contest-tbody"></tbody>
   </table>
-  <button id="btn-end-contest" class="val-btn" style="margin-top: 15px;">END CONTEST</button>
+  <button id="btn-end-contest" class="btn btn-primary" style="margin-top: 15px;">END CONTEST</button>
 </div>
 `;
 
@@ -159,7 +159,7 @@ function renderActiveContest() {
       <td>${String.fromCharCode(65+idx)}. ${p.name}</td>
       <td style="color:${p.solved ? '#4FFFBE' : '#FF4655'}">${p.solved ? 'AC' : 'Pending'}</td>
       <td>
-        <button class="val-btn-outline mark-solved-btn" data-idx="${idx}">${p.solved ? 'Unmark' : 'Mark AC'}</button>
+        <button class="btn btn-secondary mark-solved-btn" data-idx="${idx}">${p.solved ? 'Unmark' : 'Mark AC'}</button>
       </td>
     `;
     tbody.appendChild(tr);

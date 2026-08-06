@@ -7,9 +7,9 @@ const html = `
   <h3>Add Friend</h3>
   <div style="display:flex; gap:10px; margin-top:10px;">
     <input type="text" id="friend-handle-input" class="val-input" placeholder="Codeforces Handle" style="flex:1;">
-    <button id="add-friend-btn" class="val-btn">Add</button>
+    <button id="add-friend-btn" class="btn btn-primary">Add</button>
   </div>
-  <button id="import-cf-friends" class="val-btn-outline" style="margin-top:10px; width:100%;">Import from Codeforces (Must be logged in)</button>
+  
 </div>
 
 <div style="display:flex; gap: 20px;">
@@ -57,7 +57,7 @@ async function renderFriends() {
               <strong>${u.handle}</strong>
               <span class="rating-badge" style="margin-left:10px;">${u.rating || 'Unrated'}</span>
             </div>
-            <button class="val-btn-outline remove-friend-btn" data-handle="${u.handle}" style="padding: 5px 10px;">Remove</button>
+            <button class="btn btn-secondary remove-friend-btn" data-handle="${u.handle}" style="padding: 5px 10px;">Remove</button>
           </div>
         `;
       });
@@ -129,24 +129,6 @@ async function init() {
       document.getElementById('friend-handle-input').value = '';
       renderFriends();
       fetchActivity();
-    }
-  });
-  
-  addListener(document.getElementById('import-cf-friends'), 'click', async () => {
-    try {
-      const res = await fetch('https://codeforces.com/api/user.friends?onlyOnline=false');
-      const data = await res.json();
-      if(data.status === 'OK') {
-        friends = [...new Set([...friends, ...data.result])];
-        if (chrome && chrome.storage) {
-          chrome.storage.sync.set({ cfFriends: friends });
-        }
-        renderFriends();
-      } else {
-        alert('Failed to import friends. Make sure you are logged into Codeforces.');
-      }
-    } catch(e) {
-      alert('Error fetching friends.');
     }
   });
   
