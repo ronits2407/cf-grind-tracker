@@ -82,7 +82,7 @@ window.CFGT_Panel = {
       </div>
     `;
     
-    container.parentNode.insertBefore(panel, container.nextSibling);
+    container.parentNode.insertBefore(panel, container);
     this.panelEl = panel;
     
     this.bindEvents();
