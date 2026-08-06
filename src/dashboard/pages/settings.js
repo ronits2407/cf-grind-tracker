@@ -153,12 +153,17 @@ function init() {
   addListener(document.getElementById('btn-test-ntfy'), 'click', () => {
     const topic = document.getElementById('setting-ntfy').value.trim();
     if (topic && chrome && chrome.runtime) {
-      chrome.runtime.sendMessage({
-        type: 'SEND_NTFY',
-        title: 'Test Notification',
-        body: 'CF Grind Tracker push notifications are working!'
-      });
-      alert('Test push sent! Check your phone.');
+      saveSetting('ntfyTopic', topic); // Force save before test
+      setTimeout(() => {
+        chrome.runtime.sendMessage({
+          type: 'SEND_NTFY',
+          payload: {
+            title: 'Test Notification',
+            body: 'CF Grind Tracker push notifications are working!'
+          }
+        });
+        alert('Test push sent! Check your phone.');
+      }, 100);
     } else {
       alert('Please enter a valid Ntfy topic first.');
     }
