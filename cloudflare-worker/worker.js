@@ -55,18 +55,17 @@ export default {
       if (sub.id > lastSeenId && lastSeenId > 0) {
         // New submission!
         const problemName = sub.problem.name;
-        let message = '';
-        
-        if (sub.verdict === 'OK') {
-          message = `🟢 ${handle} SOLVED ${problemName}`;
-        } else if (sub.verdict && sub.verdict !== 'TESTING') {
-          message = `🔴 ${handle} WA on ${problemName}`;
-        }
-        
-        if (message) {
+        if (sub.verdict && sub.verdict !== 'TESTING') {
+          const verdictStr = sub.verdict === 'OK' ? 'AC' : sub.verdict;
+          const body = `${verdictStr} on ${problemName}`;
+          
           await fetch(`https://ntfy.sh/${topic}`, {
             method: 'POST',
-            body: message
+            headers: {
+              'Title': handle,
+              'Priority': 'default'
+            },
+            body: body
           });
         }
       }
