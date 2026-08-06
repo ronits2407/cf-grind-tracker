@@ -24,6 +24,10 @@ const html = `
     <label style="width: 150px;">Browser Notifications:</label>
     <input type="checkbox" id="setting-notify-browser" style="accent-color: var(--accent); width:20px; height:20px;">
   </div>
+  <div style="display:flex; gap:10px; margin-top:15px; align-items:center;">
+    <label style="width: 150px;">Notify All Verdicts:</label>
+    <input type="checkbox" id="setting-notify-all" style="accent-color: var(--accent); width:20px; height:20px;">
+  </div>
 </div>
 
 <div class="val-panel settings-section" style="margin-top: 20px;">
@@ -57,10 +61,11 @@ function addListener(el, type, handler) {
 
 async function loadSettings() {
   if(chrome && chrome.storage) {
-    chrome.storage.sync.get(['cfHandle', 'ntfyTopic', 'notifyBrowser', 'spiK', 'spiPenalty'], (res) => {
+    chrome.storage.sync.get(['cfHandle', 'ntfyTopic', 'notifyBrowser', 'notifyAllVerdicts', 'spiK', 'spiPenalty'], (res) => {
       if(res.cfHandle) document.getElementById('setting-handle').value = res.cfHandle;
       if(res.ntfyTopic) document.getElementById('setting-ntfy').value = res.ntfyTopic;
       if(res.notifyBrowser !== undefined) document.getElementById('setting-notify-browser').checked = res.notifyBrowser;
+      if(res.notifyAllVerdicts !== undefined) document.getElementById('setting-notify-all').checked = res.notifyAllVerdicts;
       if(res.spiK) {
         document.getElementById('setting-k').value = res.spiK;
         document.getElementById('val-k').textContent = res.spiK;
@@ -116,6 +121,7 @@ function init() {
   addListener(document.getElementById('setting-handle'), 'change', (e) => saveSetting('cfHandle', e.target.value));
   addListener(document.getElementById('setting-ntfy'), 'change', (e) => saveSetting('ntfyTopic', e.target.value));
   addListener(document.getElementById('setting-notify-browser'), 'change', (e) => saveSetting('notifyBrowser', e.target.checked));
+  addListener(document.getElementById('setting-notify-all'), 'change', (e) => saveSetting('notifyAllVerdicts', e.target.checked));
   
   addListener(document.getElementById('setting-k'), 'input', (e) => {
     document.getElementById('val-k').textContent = e.target.value;
