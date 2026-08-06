@@ -57,7 +57,15 @@ async function loadStats() {
 
   try {
     const res = await fetch(`https://codeforces.com/api/user.info?handles=${handle}`);
-    const data = await res.json();
+    if (!res.ok) return;
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (err) {
+      return; // CF returned HTML (e.g. 503)
+    }
+    
     if (data.status === 'OK' && data.result.length > 0) {
       let avatarUrl = data.result[0].titlePhoto || data.result[0].avatar;
       if (avatarUrl && avatarUrl.startsWith('//')) {
