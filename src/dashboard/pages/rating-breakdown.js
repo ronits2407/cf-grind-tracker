@@ -97,15 +97,15 @@ export default {
           else if (avgSpi < 0.8) timeColor = 'var(--accent)';
 
           // Table row
-          tbody.innerHTML += \`
+          tbody.innerHTML += `
             <tr>
-              <td>\${r}</td>
-              <td>\${arr.length}</td>
-              <td><span style="color: \${timeColor}">\${Math.round(avgTime / 60000)}m \${Math.round((avgTime % 60000) / 1000)}s</span></td>
-              <td>\${avgSpi.toFixed(2)}</td>
-              <td>\${conf}</td>
+              <td>${r}</td>
+              <td>${arr.length}</td>
+              <td><span style="color: ${timeColor}">${Math.round(avgTime / 60000)}m ${Math.round((avgTime % 60000) / 1000)}s</span></td>
+              <td>${avgSpi.toFixed(2)}</td>
+              <td>${conf}</td>
             </tr>
-          \`;
+          `;
 
           // Improvement trend (only if >= 10 solves)
           if (arr.length >= 10) {
@@ -120,17 +120,17 @@ export default {
             
             const diff = first5Time > 0 ? ((last5Time - first5Time) / first5Time) * 100 : 0;
             const diffColor = diff < 0 ? 'var(--accent-green)' : 'var(--accent)';
-            const diffText = diff > 0 ? \`+\${diff.toFixed(1)}%\` : \`\${diff.toFixed(1)}%\`;
+            const diffText = diff > 0 ? `+${diff.toFixed(1)}%` : `${diff.toFixed(1)}%`;
             
-            imprContainer.innerHTML += \`
-              <div style="background: var(--bg-primary); padding: 16px; margin-bottom: 8px; border-left: 3px solid \${diffColor};">
+            imprContainer.innerHTML += `
+              <div style="background: var(--bg-primary); padding: 16px; margin-bottom: 8px; border-left: 3px solid ${diffColor};">
                 <div style="display: flex; justify-content: space-between;">
-                  <span>\${r} Rating</span>
-                  <span style="color: \${diffColor};">\${diffText} time</span>
+                  <span>${r} Rating</span>
+                  <span style="color: ${diffColor};">${diffText} time</span>
                 </div>
-                <div style="font-size: 12px; color: var(--text-secondary);">First 5: \${(first5Time/60000).toFixed(1)}m | Last 5: \${(last5Time/60000).toFixed(1)}m</div>
+                <div style="font-size: 12px; color: var(--text-secondary);">First 5: ${(first5Time/60000).toFixed(1)}m | Last 5: ${(last5Time/60000).toFixed(1)}m</div>
               </div>
-            \`;
+            `;
           }
         });
         

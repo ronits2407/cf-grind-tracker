@@ -66,7 +66,7 @@ function formatTime(secs) {
   if (!secs) return '-';
   const m = Math.floor(secs / 60);
   const s = Math.floor(secs % 60);
-  return \`\${m}:\${s < 10 ? '0' : ''}\${s}\`;
+  return `${m}:${s < 10 ? '0' : ''}${s}`;
 }
 
 function formatDate(ts) {
@@ -93,7 +93,7 @@ function renderTable() {
   if (currentPage > totalPages) currentPage = totalPages;
   if (currentPage < 1) currentPage = 1;
   
-  document.getElementById('page-info').textContent = \`Page \${currentPage} of \${totalPages}\`;
+  document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
   
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage;
@@ -107,16 +107,16 @@ function renderTable() {
       spiColor = p.spi > 1 ? '#4FFFBE' : '#FF4655';
     }
     
-    tr.innerHTML = \`
-      <td><a href="https://codeforces.com/contest/\${p.contestId}/problem/\${p.index}" target="_blank" style="color:var(--text); text-decoration:underline;">\${p.name || p.contestId + p.index}</a></td>
-      <td><span class="rating-badge">\${p.rating || '?'}</span></td>
-      <td>\${p.mode || 'practice'}</td>
-      <td>\${formatTime(p.solveTime)}</td>
-      <td>\${p.waCount || 0}</td>
-      <td>\${p.aiUsed ? '✓' : '✗'}</td>
-      <td style="color:\${spiColor}">\${p.spi ? p.spi.toFixed(2) : '-'}</td>
-      <td>\${formatDate(p.timestamp)}</td>
-    \`;
+    tr.innerHTML = `
+      <td><a href="https://codeforces.com/contest/${p.contestId}/problem/${p.index}" target="_blank" style="color:var(--text); text-decoration:underline;">${p.name || p.contestId + p.index}</a></td>
+      <td><span class="rating-badge">${p.rating || '?'}</span></td>
+      <td>${p.mode || 'practice'}</td>
+      <td>${formatTime(p.solveTime)}</td>
+      <td>${p.waCount || 0}</td>
+      <td>${p.aiUsed ? '✓' : '✗'}</td>
+      <td style="color:${spiColor}">${p.spi ? p.spi.toFixed(2) : '-'}</td>
+      <td>${formatDate(p.timestamp)}</td>
+    `;
     tbody.appendChild(tr);
   });
 }

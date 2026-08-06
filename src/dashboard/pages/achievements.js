@@ -107,12 +107,12 @@ function renderAchievements() {
       card.style.boxShadow = '0 0 10px rgba(255,70,85,0.2)';
     }
 
-    card.innerHTML = \`
-      <div style="font-size: 3rem; margin-bottom: 10px;">\${a.icon}</div>
-      <h3 style="margin-top:0;">\${a.title}</h3>
-      <p style="color:var(--text); opacity:0.8;">\${a.desc}</p>
-      \${!isUnlocked ? '<div style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(15,25,35,0.7); display:flex; align-items:center; justify-content:center; font-size:3rem;">🔒</div>' : ''}
-    \`;
+    card.innerHTML = `
+      <div style="font-size: 3rem; margin-bottom: 10px;">${a.icon}</div>
+      <h3 style="margin-top:0;">${a.title}</h3>
+      <p style="color:var(--text); opacity:0.8;">${a.desc}</p>
+      ${!isUnlocked ? '<div style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(15,25,35,0.7); display:flex; align-items:center; justify-content:center; font-size:3rem;">🔒</div>' : ''}
+    `;
     container.appendChild(card);
   });
 }

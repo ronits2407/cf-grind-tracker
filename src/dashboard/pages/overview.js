@@ -82,7 +82,7 @@ export default {
     
     document.getElementById('overview-rank-name').textContent = rankName;
     document.getElementById('overview-rating').textContent = currentRating;
-    document.getElementById('overview-progress').style.width = \`\${progress}%\`;
+    document.getElementById('overview-progress').style.width = `${progress}%`;
     
     // Stats logic
     const problems = await db.getProblems();
@@ -124,7 +124,7 @@ export default {
         checkDate.setDate(checkDate.getDate() - 1);
       }
     }
-    document.getElementById('stat-streak').textContent = \`\${streak} Days\`;
+    document.getElementById('stat-streak').textContent = `${streak} Days`;
 
     // Chart.js global settings
     if (window.Chart) {
@@ -136,7 +136,7 @@ export default {
       const history = await db.getRatingHistory();
       const labels = history.map(h => {
         const d = new Date(h.timestamp);
-        return \`\${d.getMonth()+1}/\${d.getDate()}\`;
+        return `${d.getMonth()+1}/${d.getDate()}`;
       });
       const data = history.map(h => h.rating);
       
@@ -200,7 +200,7 @@ export default {
         else if (count === 2) color = '#b03541';
         else if (count >= 3) color = '#FF4655';
         
-        heatmapHtml += \`<div style="width: 12px; height: 12px; background: \${color}; border-radius: 2px;" title="\${new Date(currentCellDate).toLocaleDateString()}: \${count} solves"></div>\`;
+        heatmapHtml += `<div style="width: 12px; height: 12px; background: ${color}; border-radius: 2px;" title="${new Date(currentCellDate).toLocaleDateString()}: ${count} solves"></div>`;
       }
       heatmapHtml += '</div>';
     }
@@ -212,14 +212,14 @@ export default {
     if (recent.length === 0) {
       tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No solves yet.</td></tr>';
     } else {
-      tbody.innerHTML = recent.map(p => \`
+      tbody.innerHTML = recent.map(p => `
         <tr>
-          <td>\${p.problemId}</td>
-          <td>\${p.rating || 'N/A'}</td>
-          <td>\${Math.round(p.solveTime / 60000)}m \${Math.round((p.solveTime % 60000) / 1000)}s</td>
-          <td>\${(p.spi || 0).toFixed(2)}</td>
+          <td>${p.problemId}</td>
+          <td>${p.rating || 'N/A'}</td>
+          <td>${Math.round(p.solveTime / 60000)}m ${Math.round((p.solveTime % 60000) / 1000)}s</td>
+          <td>${(p.spi || 0).toFixed(2)}</td>
         </tr>
-      \`).join('');
+      `).join('');
     }
   },
   destroy: () => {

@@ -46,20 +46,20 @@ async function renderFriends() {
   
   const handles = friends.join(';');
   try {
-    const res = await fetch(\`https://codeforces.com/api/user.info?handles=\${handles}\`);
+    const res = await fetch(`https://codeforces.com/api/user.info?handles=${handles}`);
     const data = await res.json();
     
     if (data.status === 'OK') {
       data.result.forEach(u => {
-        fl.innerHTML += \`
+        fl.innerHTML += `
           <div class="val-panel" style="display:flex; justify-content:space-between; align-items:center; padding:10px;">
             <div>
-              <strong>\${u.handle}</strong>
-              <span class="rating-badge" style="margin-left:10px;">\${u.rating || 'Unrated'}</span>
+              <strong>${u.handle}</strong>
+              <span class="rating-badge" style="margin-left:10px;">${u.rating || 'Unrated'}</span>
             </div>
-            <button class="val-btn-outline remove-friend-btn" data-handle="\${u.handle}" style="padding: 5px 10px;">Remove</button>
+            <button class="val-btn-outline remove-friend-btn" data-handle="${u.handle}" style="padding: 5px 10px;">Remove</button>
           </div>
-        \`;
+        `;
       });
       
       document.querySelectorAll('.remove-friend-btn').forEach(btn => {
@@ -89,18 +89,18 @@ async function fetchActivity() {
   try {
     // Note: fetching activity for multiple users without API key is limited. Just mock or do one by one.
     // We'll just fetch the first friend's status as example, or mock for simplicity if multiple.
-    const res = await fetch(\`https://codeforces.com/api/user.status?handle=\${friends[0]}&from=1&count=5\`);
+    const res = await fetch(`https://codeforces.com/api/user.status?handle=${friends[0]}&from=1&count=5`);
     const data = await res.json();
     if(data.status === 'OK') {
       fa.innerHTML = '';
       data.result.forEach(sub => {
         const color = sub.verdict === 'OK' ? '#4FFFBE' : '#FF4655';
-        fa.innerHTML += \`
-          <div class="val-panel" style="padding:10px; border-left: 3px solid \${color};">
-            <strong>\${friends[0]}</strong> \${sub.verdict === 'OK' ? 'solved' : 'attempted'}
-            <a href="https://codeforces.com/contest/\${sub.problem.contestId}/problem/\${sub.problem.index}" target="_blank" style="color:var(--text);">\${sub.problem.name}</a>
+        fa.innerHTML += `
+          <div class="val-panel" style="padding:10px; border-left: 3px solid ${color};">
+            <strong>${friends[0]}</strong> ${sub.verdict === 'OK' ? 'solved' : 'attempted'}
+            <a href="https://codeforces.com/contest/${sub.problem.contestId}/problem/${sub.problem.index}" target="_blank" style="color:var(--text);">${sub.problem.name}</a>
           </div>
-        \`;
+        `;
       });
     }
   } catch(e) {

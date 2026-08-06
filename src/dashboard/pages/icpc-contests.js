@@ -97,11 +97,11 @@ async function generateContest() {
   const preview = document.getElementById('contest-preview');
   preview.innerHTML = '';
   generatedProblems.forEach((p, idx) => {
-    preview.innerHTML += \`
+    preview.innerHTML += `
       <div style="background:var(--surface); padding:10px; border-left: 3px solid var(--accent);">
-        <strong>\${String.fromCharCode(65+idx)}. \${p.name}</strong> (\${p.rating || '?'})
+        <strong>${String.fromCharCode(65+idx)}. ${p.name}</strong> (${p.rating || '?'})
       </div>
-    \`;
+    `;
   });
   
   btn.textContent = 'GENERATE PROBLEMS';
@@ -124,7 +124,7 @@ function startContest() {
   document.querySelector('.contest-generator').style.display = 'none';
   
   generatedProblems.forEach(p => {
-    window.open(\`https://codeforces.com/contest/\${p.contestId}/problem/\${p.index}\`, '_blank');
+    window.open(`https://codeforces.com/contest/${p.contestId}/problem/${p.index}`, '_blank');
   });
   
   timerInterval = setInterval(updateTimer, 1000);
@@ -147,7 +147,7 @@ function updateTimer() {
   const s = Math.floor((remaining % 60000) / 1000);
   
   document.getElementById('contest-timer').textContent = 
-    \`\${h.toString().padStart(2,'0')}:\${m.toString().padStart(2,'0')}:\${s.toString().padStart(2,'0')}\`;
+    `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
 }
 
 function renderActiveContest() {
@@ -155,13 +155,13 @@ function renderActiveContest() {
   tbody.innerHTML = '';
   activeContest.problems.forEach((p, idx) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = \`
-      <td>\${String.fromCharCode(65+idx)}. \${p.name}</td>
-      <td style="color:\${p.solved ? '#4FFFBE' : '#FF4655'}">\${p.solved ? 'AC' : 'Pending'}</td>
+    tr.innerHTML = `
+      <td>${String.fromCharCode(65+idx)}. ${p.name}</td>
+      <td style="color:${p.solved ? '#4FFFBE' : '#FF4655'}">${p.solved ? 'AC' : 'Pending'}</td>
       <td>
-        <button class="val-btn-outline mark-solved-btn" data-idx="\${idx}">\${p.solved ? 'Unmark' : 'Mark AC'}</button>
+        <button class="val-btn-outline mark-solved-btn" data-idx="${idx}">${p.solved ? 'Unmark' : 'Mark AC'}</button>
       </td>
-    \`;
+    `;
     tbody.appendChild(tr);
   });
   

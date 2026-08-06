@@ -64,18 +64,18 @@ async function loadRecommendations() {
       const probs = data.result.problems.slice(0, 10);
       recList.innerHTML = '';
       probs.forEach(p => {
-        recList.innerHTML += \`
+        recList.innerHTML += `
           <div class="val-panel" style="display:flex; justify-content:space-between; align-items:center;">
             <div>
-              <a href="https://codeforces.com/contest/\${p.contestId}/problem/\${p.index}" target="_blank" style="color:var(--text); text-decoration:none;">
-                <strong>\${p.name}</strong>
+              <a href="https://codeforces.com/contest/${p.contestId}/problem/${p.index}" target="_blank" style="color:var(--text); text-decoration:none;">
+                <strong>${p.name}</strong>
               </a>
-              <span class="rating-badge" style="margin-left:10px;">\${p.rating || '?'}</span>
-              <div style="font-size:0.8em; color:gray; margin-top:5px;">\${p.tags.join(', ')}</div>
+              <span class="rating-badge" style="margin-left:10px;">${p.rating || '?'}</span>
+              <div style="font-size:0.8em; color:gray; margin-top:5px;">${p.tags.join(', ')}</div>
             </div>
-            <button class="val-btn-outline queue-add-btn" data-id="\${p.contestId}-\${p.index}" data-name="\${p.name}">+ Queue</button>
+            <button class="val-btn-outline queue-add-btn" data-id="${p.contestId}-${p.index}" data-name="${p.name}">+ Queue</button>
           </div>
-        \`;
+        `;
       });
       
       document.querySelectorAll('.queue-add-btn').forEach(btn => {
@@ -106,12 +106,12 @@ function renderLadders() {
   const ll = document.getElementById('ladders-list');
   ll.innerHTML = '';
   ladders.forEach(l => {
-    ll.innerHTML += \`
+    ll.innerHTML += `
       <div class="val-panel">
-        <h4>\${l.title}</h4>
+        <h4>${l.title}</h4>
         <button class="val-btn" style="margin-top:10px;">Start Ladder</button>
       </div>
-    \`;
+    `;
   });
 }
 
@@ -124,12 +124,12 @@ function renderQueue() {
   }
   
   practiceQueue.forEach((q, idx) => {
-    ql.innerHTML += \`
+    ql.innerHTML += `
       <div class="val-panel" style="display:flex; justify-content:space-between;">
-        <span>\${q.name} (\${q.id})</span>
-        <button class="val-btn-outline remove-queue-btn" data-idx="\${idx}">Remove</button>
+        <span>${q.name} (${q.id})</span>
+        <button class="val-btn-outline remove-queue-btn" data-idx="${idx}">Remove</button>
       </div>
-    \`;
+    `;
   });
   
   document.querySelectorAll('.remove-queue-btn').forEach(btn => {

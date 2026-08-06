@@ -91,10 +91,10 @@ async function validateHandle() {
   msg.style.color = 'var(--text)';
   
   try {
-    const res = await fetch(\`https://codeforces.com/api/user.info?handles=\${h}\`);
+    const res = await fetch(`https://codeforces.com/api/user.info?handles=${h}`);
     const data = await res.json();
     if(data.status === 'OK') {
-      msg.textContent = \`Success! Rating: \${data.result[0].rating || 'Unrated'}\`;
+      msg.textContent = `Success! Rating: ${data.result[0].rating || 'Unrated'}`;
       msg.style.color = '#4FFFBE';
       saveSetting('cfHandle', h);
     } else {

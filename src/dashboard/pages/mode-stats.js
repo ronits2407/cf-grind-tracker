@@ -91,9 +91,9 @@ export default {
       const avgTime = totalTime / modeData.length;
       
       document.getElementById('ms-spi').textContent = avgSpi.toFixed(2);
-      document.getElementById('ms-time').textContent = \`\${Math.round(avgTime / 60000)}m\`;
-      document.getElementById('ms-wa').textContent = \`\${Math.round((waCount / modeData.length) * 100)}%\`;
-      document.getElementById('ms-ai').textContent = \`\${Math.round((aiCount / modeData.length) * 100)}%\`;
+      document.getElementById('ms-time').textContent = `${Math.round(avgTime / 60000)}m`;
+      document.getElementById('ms-wa').textContent = `${Math.round((waCount / modeData.length) * 100)}%`;
+      document.getElementById('ms-ai').textContent = `${Math.round((aiCount / modeData.length) * 100)}%`;
 
       if (window.Chart) {
         Chart.defaults.color = '#7B8794';
@@ -102,7 +102,7 @@ export default {
 
         // Time trend chart (last 30 solves in this mode)
         const recent = modeData.slice(0, 30).reverse();
-        const timeLabels = recent.map((_, i) => \`#\${i+1}\`);
+        const timeLabels = recent.map((_, i) => `#${i+1}`);
         const timeData = recent.map(p => p.solveTime / 60000);
 
         const timeCtx = document.getElementById('timeChart').getContext('2d');
