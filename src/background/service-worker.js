@@ -34,6 +34,8 @@ async function checkSubmissions() {
   const handle = await settings.get('cfHandle');
   if (!handle) return;
 
+  console.log(`[CFGT] Polling submissions for active solve: ${handle} (Problem ${currentSolve.contestId}${currentSolve.problemIndex})`);
+
   try {
     const response = await fetch(`https://codeforces.com/api/user.status?handle=${handle}&count=10`);
     const data = await response.json();
@@ -81,9 +83,16 @@ async function checkFriendsActivity() {
   }
   if (!friends || friends.length === 0) return;
 
+  console.log(`[CFGT] Polling activity for ${friends.length} friends...`);
+
   for (const friend of friends) {
     try {
+      console.log(`[CFGT] Fetching status for: ${friend}`);
       const response = await fetch(`https://codeforces.com/api/user.status?handle=${friend}&count=1`);
+      
+      // Add a 500ms delay to avoid Codeforces API rate limiting (max 5 requests per second)
+      await new Promise(r => setTimeout(r, 500));
+      
       const data = await response.json();
       if (data.status !== 'OK' || !data.result || data.result.length === 0) continue;
       
