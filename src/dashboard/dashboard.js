@@ -1,3 +1,7 @@
+import { DB } from '../storage/db.js';
+import { Settings } from '../storage/settings.js';
+import { getRank, getRankProgress } from '../engine/rating.js';
+
 import overviewPage from './pages/overview.js';
 import modeStatsPage from './pages/mode-stats.js';
 import ratingBreakdownPage from './pages/rating-breakdown.js';
@@ -20,22 +24,23 @@ const pages = {
   'settings': settingsPage
 };
 
-// Global State Mock (Since we don't have the actual DB class here)
+const db = new DB();
+const settings = new Settings();
+
+window.cfgtDB = db;
+window.cfgtSettings = settings;
+
 window.cfgtState = {
   rating: 1200,
-  rank: 'SILVER 1',
-  settings: {}
+  rank: 'SILVER 1'
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Try to load real data if available
-  // Load real rating/rank from chrome.storage.sync (where settings.js writes)
-  try {
-    const data = await new Promise(resolve => chrome.storage.sync.get(['rating', 'mode'], resolve));
-    if (data.rating) window.cfgtState.rating = data.rating;
-  } catch (e) {
-    console.log('Not in extension context, using default data.');
-  }
+  await db.openDB();
+  await settings.load();
+
+  window.cfgtState.rating = settings.get('rating') || 1200;
+  window.cfgtState.rank = getRank(window.cfgtState.rating);
 
   updateSidebar();
 
