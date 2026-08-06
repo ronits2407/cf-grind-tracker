@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <rect width="48" height="48" fill="#FF4655" />
+  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="24" fill="#ECE8E1">CF</text>
+  <path d="M0,0 L12,0 L0,12 Z" fill="#0F1923" />
+</svg>

@@ -1,0 +1,14 @@
+name = "cf-grind-stalker"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[triggers]
+crons = ["* * * * *"]
+
+[[kv_namespaces]]
+binding = "CF_GRIND_KV"
+id = "REPLACE_WITH_YOUR_KV_ID"
+
+[vars]
+FRIEND_HANDLES = ""  # Set via wrangler secret or dashboard
+NTFY_TOPIC = "cf-grind-gzn84omyxtxx"

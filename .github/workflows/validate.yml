@@ -1,0 +1,16 @@
+name: Validate Extension
+on: [push, pull_request]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate manifest.json
+        run: python -m json.tool manifest.json > /dev/null && echo 'manifest.json is valid JSON'
+      - name: Check required files
+        run: |
+          test -f manifest.json
+          test -f src/background/service-worker.js
+          test -f src/content/inject.js
+          test -f src/dashboard/dashboard.html
+          echo 'All required files present'

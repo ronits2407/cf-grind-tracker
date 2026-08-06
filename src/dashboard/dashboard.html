@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CF Grind Tracker | Dashboard</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- D3 and CalHeatmap -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/cal-heatmap/dist/cal-heatmap.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/cal-heatmap/dist/cal-heatmap.css">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/theme.css">
+  <link rel="stylesheet" href="styles/charts.css">
+  <link rel="stylesheet" href="styles/heatmap.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1 class="logo">CFGT</h1>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#overview" class="nav-item active" data-page="overview">
+          <span class="icon">📊</span> Overview
+        </a>
+        <a href="#mode-stats" class="nav-item" data-page="mode-stats">
+          <span class="icon">🎯</span> Mode Stats
+        </a>
+        <a href="#rating-breakdown" class="nav-item" data-page="rating-breakdown">
+          <span class="icon">📈</span> Rating Breakdown
+        </a>
+        <a href="#problem-history" class="nav-item" data-page="problem-history">
+          <span class="icon">📜</span> Problem History
+        </a>
+        <a href="#achievements" class="nav-item" data-page="achievements">
+          <span class="icon">🏆</span> Achievements
+        </a>
+        <a href="#icpc-contests" class="nav-item" data-page="icpc-contests">
+          <span class="icon">⚔️</span> ICPC Contests
+        </a>
+        <a href="#practice-list" class="nav-item" data-page="practice-list">
+          <span class="icon">📋</span> Practice List
+        </a>
+        <a href="#friends" class="nav-item" data-page="friends">
+          <span class="icon">👥</span> Friends
+        </a>
+        <a href="#settings" class="nav-item" data-page="settings">
+          <span class="icon">⚙️</span> Settings
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="rank-preview">
+          <div class="rank-badge" id="sidebar-rank-icon">S1</div>
+          <div class="rank-details">
+            <div class="rank-name" id="sidebar-rank-name">SILVER 1</div>
+            <div class="rank-rating" id="sidebar-rating">1200 RR</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+      <!-- Pages will be injected here -->
+    </main>
+  </div>
+
+  <!-- Main App Script -->
+  <script type="module" src="dashboard.js"></script>
+</body>
+</html>
