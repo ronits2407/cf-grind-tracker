@@ -74,7 +74,11 @@ async function checkSubmissions() {
 }
 
 async function checkFriendsActivity() {
-  const friends = await db.getFriends();
+  let friends = await db.getFriends();
+  const myHandle = await settings.get('cfHandle');
+  if (myHandle && !friends.includes(myHandle)) {
+    friends.push(myHandle);
+  }
   if (!friends || friends.length === 0) return;
 
   for (const friend of friends) {
