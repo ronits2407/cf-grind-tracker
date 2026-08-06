@@ -1,0 +1,36 @@
+.heatmap-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+  overflow-x: auto;
+}
+
+.ch-domain-text {
+  fill: var(--text-secondary);
+  font-family: var(--font-main);
+  font-size: 12px;
+}
+
+.ch-subdomain-bg {
+  fill: var(--bg-primary);
+  stroke: var(--bg-surface);
+  stroke-width: 1px;
+}
+
+/* Use D3 fill attributes for heatmap data */
+rect.ch-subdomain {
+  rx: 2;
+  ry: 2;
+  stroke: var(--bg-surface);
+  stroke-width: 1px;
+}
+
+.cal-heatmap-container .ch-tooltip {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--accent);
+  border-radius: 0;
+  padding: 8px 12px;
+  font-family: var(--font-main);
+  font-size: 12px;
+}

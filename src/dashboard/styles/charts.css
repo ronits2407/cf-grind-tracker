@@ -1,0 +1,23 @@
+/* Chart specific overrides */
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+canvas {
+  max-width: 100%;
+}
+
+/* Make Chart.js tooltips look Valorant-y by default via JS config, 
+   but we can style any custom HTML tooltips here */
+#chartjs-tooltip {
+  background: var(--bg-card);
+  border: 1px solid var(--accent);
+  color: var(--text-primary);
+  border-radius: 0;
+  pointer-events: none;
+  position: absolute;
+  transform: translate(-50%, 0);
+  transition: all .1s ease;
+}
