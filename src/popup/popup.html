@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CF Grind Tracker</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container" id="mainView" style="display: none;">
+    <div class="header">
+      <div class="rank-badge" id="rankBadge"></div>
+      <div class="user-info">
+        <h2 id="handleDisplay">Loading...</h2>
+        <div class="rating-info">
+          <span id="rankName">Loading...</span>
+          <span class="rating" id="ratingDisplay">0 RR</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Current Streak</div>
+        <div class="stat-value" id="streakDisplay">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Solves Today</div>
+        <div class="stat-value" id="solvesTodayDisplay">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg SPI Today</div>
+        <div class="stat-value" id="spiTodayDisplay">0.0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Current Mode</div>
+        <div class="stat-value" id="modeDisplay">Practice</div>
+      </div>
+    </div>
+    
+    <div class="actions">
+      <button class="btn btn-primary" id="btnDashboard">Open Dashboard</button>
+      <button class="btn btn-secondary" id="btnSettings">Settings</button>
+    </div>
+  </div>
+
+  <div class="container setup-container" id="setupView" style="display: none;">
+    <h2>Welcome to CF Grind Tracker</h2>
+    <p>Enter your Codeforces handle to begin.</p>
+    <div class="input-group">
+      <input type="text" id="handleInput" placeholder="Codeforces Handle">
+    </div>
+    <button class="btn btn-primary" id="btnSaveSetup">Start Grinding</button>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

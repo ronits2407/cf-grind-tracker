@@ -1,0 +1,91 @@
+import { Settings } from '../storage/settings.js';
+import { DB } from '../storage/db.js';
+import { getRank } from '../engine/rating.js';
+
+const settings = new Settings();
+const db = new DB();
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const isSetup = await settings.get('onboardingComplete');
+  
+  if (!isSetup) {
+    document.getElementById('setupView').style.display = 'flex';
+    
+    document.getElementById('btnSaveSetup').addEventListener('click', async () => {
+      const handle = document.getElementById('handleInput').value.trim();
+      if (handle) {
+        await settings.set('cfHandle', handle);
+        await settings.set('onboardingComplete', true);
+        window.location.reload();
+      }
+    });
+  } else {
+    document.getElementById('mainView').style.display = 'flex';
+    await loadStats();
+    
+    document.getElementById('btnDashboard').addEventListener('click', () => {
+      chrome.tabs.create({ url: chrome.runtime.getURL('src/dashboard/dashboard.html') });
+    });
+    
+    document.getElementById('btnSettings').addEventListener('click', () => {
+      chrome.tabs.create({ url: chrome.runtime.getURL('src/options/options.html') });
+    });
+  }
+});
+
+async function loadStats() {
+  const handle = await settings.get('cfHandle');
+  const rating = await settings.get('rating');
+  const mode = await settings.get('mode');
+  
+  document.getElementById('handleDisplay').textContent = handle;
+  document.getElementById('ratingDisplay').textContent = `${rating} RR`;
+  document.getElementById('modeDisplay').textContent = mode.charAt(0).toUpperCase() + mode.slice(1);
+  
+  const rank = getRank(rating);
+  document.getElementById('rankName').textContent = rank.name;
+  
+  const badge = document.getElementById('rankBadge');
+  badge.style.backgroundColor = rank.color;
+  badge.style.boxShadow = `0 0 15px ${rank.color}80`;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const problems = await db.getProblems({ dateFrom: today.getTime() });
+  document.getElementById('solvesTodayDisplay').textContent = problems.length;
+  
+  if (problems.length > 0) {
+    const avgSpi = problems.reduce((sum, p) => sum + p.spi, 0) / problems.length;
+    document.getElementById('spiTodayDisplay').textContent = avgSpi.toFixed(2);
+  } else {
+    document.getElementById('spiTodayDisplay').textContent = '0.00';
+  }
+
+  // Basic streak calc
+  const allProblems = await db.getProblems();
+  allProblems.sort((a, b) => b.timestamp - a.timestamp);
+  
+  let streak = 0;
+  let currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  
+  const daysWithSolves = new Set();
+  for (const p of allProblems) {
+    const d = new Date(p.timestamp);
+    d.setHours(0,0,0,0);
+    daysWithSolves.add(d.getTime());
+  }
+  
+  let timeCheck = currentDate.getTime();
+  if (!daysWithSolves.has(timeCheck)) {
+    timeCheck -= 86400000;
+  }
+  
+  while (daysWithSolves.has(timeCheck)) {
+    streak++;
+    timeCheck -= 86400000;
+  }
+  
+  document.getElementById('streakDisplay').textContent = streak;
+}

@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "CF Grind Tracker",
+  "version": "1.0.0",
+  "description": "Valorant-themed Codeforces practice tracker",
+  "permissions": [
+    "storage",
+    "notifications",
+    "alarms",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://codeforces.com/*",
+    "https://ntfy.sh/*"
+  ],
+  "background": {
+    "service_worker": "src/background/service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://codeforces.com/problemset/problem/*/*",
+        "*://codeforces.com/contest/*/problem/*",
+        "*://codeforces.com/gym/*/problem/*"
+      ],
+      "js": ["src/content/inject.js"],
+      "css": ["src/content/panel.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "src/popup/popup.html"
+  },
+  "icons": {
+    "16": "src/assets/icons/icon16.png",
+    "48": "src/assets/icons/icon48.png",
+    "128": "src/assets/icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["src/content/*", "src/assets/*"],
+      "matches": ["*://codeforces.com/*"]
+    }
+  ]
+}
