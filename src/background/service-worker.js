@@ -38,7 +38,16 @@ async function checkSubmissions() {
 
   try {
     const response = await fetch(`https://codeforces.com/api/user.status?handle=${handle}&count=10`);
-    const data = await response.json();
+    if (!response.ok) return;
+    
+    const text = await response.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      return; // Not JSON, probably CF returning HTML (e.g. 503)
+    }
+    
     if (data.status !== 'OK') return;
 
     let wrongCount = 0;
@@ -62,16 +71,16 @@ async function checkSubmissions() {
     if (foundAC) {
       const tabs = await chrome.tabs.query({ url: '*://codeforces.com/*' });
       for (const tab of tabs) {
-        chrome.tabs.sendMessage(tab.id, { type: 'AUTO_COMPLETE', wrongSubmissions: wrongCount });
+        chrome.tabs.sendMessage(tab.id, { type: 'AUTO_COMPLETE', wrongSubmissions: wrongCount }).catch(() => {});
       }
     } else {
       const tabs = await chrome.tabs.query({ url: '*://codeforces.com/*' });
       for (const tab of tabs) {
-        chrome.tabs.sendMessage(tab.id, { type: 'UPDATE_WA', wrongSubmissions: wrongCount });
+        chrome.tabs.sendMessage(tab.id, { type: 'UPDATE_WA', wrongSubmissions: wrongCount }).catch(() => {});
       }
     }
   } catch (error) {
-    console.error('Error polling submissions:', error);
+    // Silently handle polling errors
   }
 }
 
