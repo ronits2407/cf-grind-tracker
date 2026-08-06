@@ -100,11 +100,15 @@ async function checkFriendsActivity() {
         });
         
         if (latestSub.verdict === 'OK') {
-          showBrowserNotification('Friend Activity', `${friend} solved ${latestSub.problem.name}!`);
+          const isMe = friend === myHandle;
+          const title = isMe ? 'You Solved a Problem!' : 'Friend Solved a Problem';
+          const body = isMe ? `AC on ${latestSub.problem.name}` : `${friend} AC on ${latestSub.problem.name}`;
+          
+          showBrowserNotification(title, body);
           const phoneNtfy = await settings.get('phoneNotifications');
           if (phoneNtfy) {
             const topic = await settings.get('ntfyTopic');
-            await sendNtfyNotification(topic, 'Friend Solved a Problem', `${friend} AC on ${latestSub.problem.name}`);
+            await sendNtfyNotification(topic, title, body);
           }
         }
       }
