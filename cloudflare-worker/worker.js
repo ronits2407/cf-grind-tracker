@@ -11,84 +11,91 @@ export default {
   async processFriends(env) {
     const friendHandles = env.FRIEND_HANDLES ? env.FRIEND_HANDLES.split(',').map(s => s.trim()).filter(Boolean) : [];
     const ntfyTopic = env.NTFY_TOPIC;
+    const ntfyToken = env.NTFY_TOKEN;
     
     if (!friendHandles.length || !ntfyTopic || !env.CF_GRIND_KV) {
       console.error("Missing ENV variables or KV binding!");
       return;
     }
     
-    console.log(`Starting run. Tracking ${friendHandles.length} friends. Topic: ${ntfyTopic}`);
+    console.log(`Starting run. Tracking ${friendHandles.length} friends directly via user.status.`);
     
-    const response = await fetch(`https://codeforces.com/api/problemset.recentStatus?count=1000`);
-    if (!response.ok) {
-      console.error(`Codeforces API failed with status: ${response.status}`);
-      return;
-    }
+    // Check all handles directly. We must keep total requests <= 50!
+    // 49 CF requests + 1 aggregated Ntfy request = 50 requests exactly.
+    const notificationsToPush = [];
+    const kvUpdates = {};
     
-    const text = await response.text();
-    let data;
-    try { data = JSON.parse(text); } catch (e) { console.error("CF returned non-JSON"); return; }
-    if (data.status !== 'OK') {
-      console.error("CF API returned Error:", data.comment);
-      return;
-    }
-    
-    const friendsSubmissions = data.result.filter(sub => 
-      sub.author.members.some(m => friendHandles.includes(m.handle))
-    );
-    
-    console.log(`Found ${friendsSubmissions.length} submissions by friends in the last 1000 global submissions.`);
-    if (!friendsSubmissions.length) return;
-    
-    const subsByFriend = {};
-    for (const sub of friendsSubmissions) {
-      for (const member of sub.author.members) {
-        if (friendHandles.includes(member.handle)) {
-          if (!subsByFriend[member.handle]) subsByFriend[member.handle] = [];
-          subsByFriend[member.handle].push(sub);
-        }
-      }
-    }
-    
-    for (const handle of Object.keys(subsByFriend)) {
-      const subs = subsByFriend[handle];
-      const lastSeenKey = `last_sub_${handle}`;
-      const lastSeenIdStr = await env.CF_GRIND_KV.get(lastSeenKey);
-      const lastSeenId = lastSeenIdStr ? parseInt(lastSeenIdStr, 10) : 0;
-      
-      console.log(`Analyzing ${handle}. Last seen ID: ${lastSeenId}. Found ${subs.length} new subs.`);
-      let maxId = lastSeenId;
-      subs.sort((a, b) => a.id - b.id);
-      
-      for (const sub of subs) {
-        if (sub.id > lastSeenId && lastSeenId > 0) {
-          if (sub.verdict && sub.verdict !== 'TESTING') {
-            const verdictStr = sub.verdict === 'OK' ? 'AC' : sub.verdict;
-            console.log(`🔔 TRIGGER NOTIFICATION: ${handle} got ${verdictStr} on ${sub.problem.name}`);
-            
-            const ntfyRes = await fetch(`https://ntfy.sh/${ntfyTopic}`, {
-              method: 'POST',
-              headers: { 'Title': handle, 'Priority': 'default' },
-              body: `${verdictStr} on ${sub.problem.name}`
-            });
-            
-            if (!ntfyRes.ok) {
-              console.error(`NTFY FAILED! Status: ${ntfyRes.status}`);
-            } else {
-              console.log(`NTFY Success!`);
+    // We fetch in parallel to make it finish well within the 30s CPU limit
+    await Promise.all(friendHandles.map(async (handle) => {
+      try {
+        const response = await fetch(`https://codeforces.com/api/user.status?handle=${handle}&count=3`);
+        if (!response.ok) return;
+        
+        const data = await response.json();
+        if (data.status !== 'OK') return;
+        
+        const submissions = data.result;
+        if (!submissions.length) return;
+        
+        const lastSeenKey = `last_sub_${handle}`;
+        const lastSeenIdStr = await env.CF_GRIND_KV.get(lastSeenKey);
+        const lastSeenId = lastSeenIdStr ? parseInt(lastSeenIdStr, 10) : 0;
+        
+        let maxId = lastSeenId;
+        
+        for (const sub of submissions) {
+          if (sub.id > lastSeenId && lastSeenId > 0) {
+            if (sub.verdict && sub.verdict !== 'TESTING') {
+              const verdictStr = sub.verdict === 'OK' ? 'AC' : sub.verdict;
+              notificationsToPush.push(`${handle}: ${verdictStr} on ${sub.problem.name}`);
             }
-            await new Promise(r => setTimeout(r, 100));
+          } else if (lastSeenId === 0) {
+             // Just initialize, don't spam
           }
-        } else if (lastSeenId === 0) {
-           console.log(`Initializing DB for ${handle}. Ignoring sub ${sub.id} to prevent spam.`);
+          if (sub.id > maxId) maxId = sub.id;
         }
-        if (sub.id > maxId) maxId = sub.id;
+        
+        if (maxId > lastSeenId) {
+          kvUpdates[lastSeenKey] = maxId.toString();
+        }
+      } catch (e) {
+        console.error(`Error checking ${handle}:`, e);
+      }
+    }));
+    
+    // Save all KV updates (KV put doesn't count towards the 50 subrequest limit)
+    for (const [key, val] of Object.entries(kvUpdates)) {
+      await env.CF_GRIND_KV.put(key, val);
+    }
+    
+    // Send ONE aggregated Ntfy request to stay under the 50 limit!
+    if (notificationsToPush.length > 0) {
+      const combinedMessage = notificationsToPush.join('\n');
+      console.log(`🔔 TRIGGER NOTIFICATION (Aggregated):\n${combinedMessage}`);
+      
+      const headers = {
+        'Title': 'Codeforces Grind Tracker',
+        'Priority': 'default'
+      };
+      
+      if (ntfyToken) {
+        headers['Authorization'] = `Bearer ${ntfyToken}`;
+        console.log("Using Authenticated Ntfy Request to bypass IP ban.");
       }
       
-      if (maxId > lastSeenId) {
-        console.log(`Saving new max ID for ${handle}: ${maxId}`);
-        await env.CF_GRIND_KV.put(lastSeenKey, maxId.toString());
+      const ntfyRes = await fetch(`https://ntfy.sh/${ntfyTopic}`, {
+        method: 'POST',
+        headers: headers,
+        body: combinedMessage
+      });
+      
+      if (!ntfyRes.ok) {
+        console.error(`NTFY FAILED! Status: ${ntfyRes.status}`);
+      } else {
+        console.log(`NTFY Success!`);
       }
+    } else {
+      console.log("No new solved problems this minute.");
     }
   }
 };

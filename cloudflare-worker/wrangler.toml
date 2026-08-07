@@ -7,8 +7,9 @@ crons = ["* * * * *"]
 
 [[kv_namespaces]]
 binding = "CF_GRIND_KV"
-id = "REPLACE_WITH_YOUR_KV_ID"
+id = "4a042842541044fe86b9866f2b006952"
 
 [vars]
-FRIEND_HANDLES = ""  # Set via wrangler secret or dashboard
+FRIEND_HANDLES = "ronits2407, tourist, ecnerwala, Errichto, Benq, jiangly, yangster67, P1g, Shridhar278, FlashVS, Tanjiro_Kamado_069, aryan_gupta_iitg, _sreedevesh, kaustavbhowal, arjund0702, ByteWarden, iamag47, Dweep007, Prachet1718, PriyanshuIITGHY2006, mumuksh736, Ansh949, UltimateAAJ, dhruv173, ayan.bain.18, define_aditya, shound, AviatorKM, avani_12, aniketchonu, pmandal2007, SaylorTwift, sqv1nx_, No_L_Dominic_081, northpoledagabru, HiyaS, Ayush_Kumar_Sharma, deepakroy13, aditeyagoyal, htrap2018, Duffer3632, anshhulll, Soham1547, Ennovator999, HasiniK_797, alishabasohail2022, hermoine_sharma, ianjaliprasad, kyoder"
 NTFY_TOPIC = "cf-grind-gzn84omyxtxx"
+NTFY_TOKEN = "tk_lgbthqe3ldnhpln6blr2ho56qpc0b"
