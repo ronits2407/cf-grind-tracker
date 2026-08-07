@@ -14,22 +14,25 @@ export default {
     
     if (!friendHandles.length || !ntfyTopic || !env.CF_GRIND_KV) return;
     
-    // BATCHING: Check 10 friends per minute to never exceed Cloudflare's 50-request limit
-    const BATCH_SIZE = 10;
+    // Always check the first handle (you!) every single minute for instant alerts
+    const myHandle = friendHandles[0];
+    const otherFriends = friendHandles.slice(1);
     
+    const BATCH_SIZE = 10;
     const currentIndexStr = await env.CF_GRIND_KV.get('current_friend_index');
     let currentIndex = currentIndexStr ? parseInt(currentIndexStr, 10) : 0;
     
-    if (currentIndex >= friendHandles.length) currentIndex = 0;
-    
-    const batch = friendHandles.slice(currentIndex, currentIndex + BATCH_SIZE);
+    if (currentIndex >= otherFriends.length) currentIndex = 0;
+    const batch = otherFriends.slice(currentIndex, currentIndex + BATCH_SIZE);
     
     let nextIndex = currentIndex + BATCH_SIZE;
-    if (nextIndex >= friendHandles.length) nextIndex = 0;
-    
+    if (nextIndex >= otherFriends.length) nextIndex = 0;
     await env.CF_GRIND_KV.put('current_friend_index', nextIndex.toString());
     
-    for (const handle of batch) {
+    // Combine your handle + the batch of 10 friends
+    const handlesToCheck = [myHandle, ...batch];
+    
+    for (const handle of handlesToCheck) {
       try {
         await this.checkFriend(handle, ntfyTopic, env.CF_GRIND_KV);
         await new Promise(r => setTimeout(r, 200)); 
