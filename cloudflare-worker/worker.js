@@ -20,48 +20,60 @@ export default {
     
     console.log(`Starting run. Tracking ${friendHandles.length} friends directly via user.status.`);
     
-    // Check all handles directly. We must keep total requests <= 50!
-    // 49 CF requests + 1 aggregated Ntfy request = 50 requests exactly.
     const notificationsToPush = [];
     const kvUpdates = {};
     
-    // We fetch in parallel to make it finish well within the 30s CPU limit
-    await Promise.all(friendHandles.map(async (handle) => {
-      try {
-        const response = await fetch(`https://codeforces.com/api/user.status?handle=${handle}&count=3`);
-        if (!response.ok) return;
-        
-        const data = await response.json();
-        if (data.status !== 'OK') return;
-        
-        const submissions = data.result;
-        if (!submissions.length) return;
-        
-        const lastSeenKey = `last_sub_${handle}`;
-        const lastSeenIdStr = await env.CF_GRIND_KV.get(lastSeenKey);
-        const lastSeenId = lastSeenIdStr ? parseInt(lastSeenIdStr, 10) : 0;
-        
-        let maxId = lastSeenId;
-        
-        for (const sub of submissions) {
-          if (sub.id > lastSeenId && lastSeenId > 0) {
-            if (sub.verdict && sub.verdict !== 'TESTING') {
-              const verdictStr = sub.verdict === 'OK' ? 'AC' : sub.verdict;
-              notificationsToPush.push(`${handle}: ${verdictStr} on ${sub.problem.name}`);
-            }
-          } else if (lastSeenId === 0) {
-             // Just initialize, don't spam
+    // Cloudflare limits max concurrent fetches to 6. If we fire 49 at once, it aborts them!
+    // We must chunk them into groups of 5.
+    const chunkArray = (arr, size) => 
+      Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+        arr.slice(i * size, i * size + size)
+      );
+      
+    const chunks = chunkArray(friendHandles, 5);
+    
+    for (const chunk of chunks) {
+      await Promise.all(chunk.map(async (handle) => {
+        try {
+          const response = await fetch(`https://codeforces.com/api/user.status?handle=${handle}&count=3`);
+          if (!response.ok) {
+            // Must consume body to prevent Cloudflare deadlock
+            await response.text().catch(() => {});
+            return;
           }
-          if (sub.id > maxId) maxId = sub.id;
+          
+          const data = await response.json();
+          if (data.status !== 'OK') return;
+          
+          const submissions = data.result;
+          if (!submissions.length) return;
+          
+          const lastSeenKey = `last_sub_${handle}`;
+          const lastSeenIdStr = await env.CF_GRIND_KV.get(lastSeenKey);
+          const lastSeenId = lastSeenIdStr ? parseInt(lastSeenIdStr, 10) : 0;
+          
+          let maxId = lastSeenId;
+          
+          for (const sub of submissions) {
+            if (sub.id > lastSeenId && lastSeenId > 0) {
+              if (sub.verdict && sub.verdict !== 'TESTING') {
+                const verdictStr = sub.verdict === 'OK' ? 'AC' : sub.verdict;
+                notificationsToPush.push(`${handle}: ${verdictStr} on ${sub.problem.name}`);
+              }
+            } else if (lastSeenId === 0) {
+               // Initialize DB
+            }
+            if (sub.id > maxId) maxId = sub.id;
+          }
+          
+          if (maxId > lastSeenId) {
+            kvUpdates[lastSeenKey] = maxId.toString();
+          }
+        } catch (e) {
+          console.error(`Error checking ${handle}:`, e);
         }
-        
-        if (maxId > lastSeenId) {
-          kvUpdates[lastSeenKey] = maxId.toString();
-        }
-      } catch (e) {
-        console.error(`Error checking ${handle}:`, e);
-      }
-    }));
+      }));
+    }
     
     // Save all KV updates (KV put doesn't count towards the 50 subrequest limit)
     for (const [key, val] of Object.entries(kvUpdates)) {
@@ -90,8 +102,11 @@ export default {
       });
       
       if (!ntfyRes.ok) {
+        // Must consume body here too
+        await ntfyRes.text().catch(() => {});
         console.error(`NTFY FAILED! Status: ${ntfyRes.status}`);
       } else {
+        await ntfyRes.text().catch(() => {});
         console.log(`NTFY Success!`);
       }
     } else {
