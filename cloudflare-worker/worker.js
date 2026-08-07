@@ -9,30 +9,38 @@ export default {
   },
 
   async processFriends(env) {
-    const friendHandles = env.FRIEND_HANDLES ? env.FRIEND_HANDLES.split(',') : [];
+    const friendHandles = env.FRIEND_HANDLES ? env.FRIEND_HANDLES.split(',').map(s => s.trim()).filter(Boolean) : [];
     const ntfyTopic = env.NTFY_TOPIC;
     
-    if (!friendHandles.length || !ntfyTopic) {
-      console.error("Missing FRIEND_HANDLES or NTFY_TOPIC env vars");
-      return;
-    }
+    if (!friendHandles.length || !ntfyTopic || !env.CF_GRIND_KV) return;
     
-    for (const handle of friendHandles) {
+    // BATCHING: Check 10 friends per minute to never exceed Cloudflare's 50-request limit
+    const BATCH_SIZE = 10;
+    
+    const currentIndexStr = await env.CF_GRIND_KV.get('current_friend_index');
+    let currentIndex = currentIndexStr ? parseInt(currentIndexStr, 10) : 0;
+    
+    if (currentIndex >= friendHandles.length) currentIndex = 0;
+    
+    const batch = friendHandles.slice(currentIndex, currentIndex + BATCH_SIZE);
+    
+    let nextIndex = currentIndex + BATCH_SIZE;
+    if (nextIndex >= friendHandles.length) nextIndex = 0;
+    
+    await env.CF_GRIND_KV.put('current_friend_index', nextIndex.toString());
+    
+    for (const handle of batch) {
       try {
-        const trimmedHandle = handle.trim();
-        if (!trimmedHandle) continue;
-        
-        await this.checkFriend(trimmedHandle, ntfyTopic, env.CF_GRIND_KV);
-        // Rate limit API calls
-        await new Promise(r => setTimeout(r, 200));
+        await this.checkFriend(handle, ntfyTopic, env.CF_GRIND_KV);
+        await new Promise(r => setTimeout(r, 200)); 
       } catch (e) {
-        console.error(`Error checking friend ${handle}:`, e);
+        console.error(`Error checking ${handle}:`, e);
       }
     }
   },
 
   async checkFriend(handle, topic, kv) {
-    const response = await fetch(`https://codeforces.com/api/user.status?handle=${handle}&count=5`);
+    const response = await fetch(`https://codeforces.com/api/user.status?handle=${handle}&count=3`);
     if (!response.ok) {
       throw new Error(`CF API HTTP error ${response.status}`);
     }
