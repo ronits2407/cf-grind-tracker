@@ -1,1 +1,0 @@
-export default { async scheduled() { let count = 0; try { for(let i=0; i<60; i++) { await fetch('https://example.com'); count++; } console.log('Successfully made ' + count + ' requests'); } catch(e) { console.error('Crashed after ' + count + ' requests: ' + e); } } }
