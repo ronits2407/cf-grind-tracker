@@ -69,14 +69,14 @@ function init() {
     }, 100);
   };
 
-  const problemStatement = document.querySelector('.problem-statement');
-  if (problemStatement) {
-    injectPanel(problemStatement);
+  const ttypography = document.querySelector('.ttypography');
+  if (ttypography) {
+    injectPanel(ttypography);
   } else {
     const observer = new MutationObserver((mutations, obs) => {
-      const ps = document.querySelector('.problem-statement');
-      if (ps) {
-        injectPanel(ps);
+      const tt = document.querySelector('.ttypography');
+      if (tt) {
+        injectPanel(tt);
         obs.disconnect();
       }
     });
