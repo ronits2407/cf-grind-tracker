@@ -19,24 +19,6 @@ export default {
           <h2 style="font-size: 32px;" id="stat-streak">0 Days</h2>
         </div>
       </div>
-
-      <div class="cfgt-card">
-        <h2 class="cfgt-card-title">RECENT SOLVES</h2>
-        <div class="table-container">
-          <table id="recent-solves-table">
-            <thead>
-              <tr>
-                <th>Problem</th>
-                <th>Rating</th>
-                <th>Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Data injected here -->
-            </tbody>
-          </table>
-        </div>
-      </div>
   `,
   charts,
   init: async () => {
@@ -82,21 +64,6 @@ export default {
       Chart.defaults.color = '#7B8794';
       Chart.defaults.borderColor = '#1F2F3D';
       Chart.defaults.font.family = 'Inter';
-    }
-
-    // Recent solves table
-    const recent = problems.slice(0, 5);
-    const tbody = document.querySelector('#recent-solves-table tbody');
-    if (recent.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="3" style="text-align: center;">No solves yet.</td></tr>';
-    } else {
-      tbody.innerHTML = recent.map(p => `
-        <tr>
-          <td>${p.problemId}</td>
-          <td>${p.rating || 'N/A'}</td>
-          <td>${Math.round(p.solveTime / 60000)}m ${Math.round((p.solveTime % 60000) / 1000)}s</td>
-        </tr>
-      `).join('');
     }
   },
   destroy: () => {
