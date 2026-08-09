@@ -9,9 +9,7 @@ export default {
         <div style="margin-bottom: 24px;">
           <select id="rating-range" class="btn btn-secondary">
             <option value="all">All Ratings</option>
-            <option value="800-1199">800 - 1199</option>
-            <option value="1200-1599">1200 - 1599</option>
-            <option value="1600+">1600+</option>
+            <!-- Generated dynamically in init -->
           </select>
         </div>
 
@@ -50,6 +48,7 @@ export default {
   charts,
   init: async () => {
     const db = window.cfgtDB;
+    let isSelectPopulated = false;
     
     const render = async () => {
       // Clean up charts
@@ -57,12 +56,28 @@ export default {
       charts.length = 0;
 
       const problems = await db.getProblems();
+      
+      if (!isSelectPopulated) {
+        const ratingSelect = document.getElementById('rating-range');
+        const maxRating = Math.max(800, ...problems.map(p => p.rating || 0));
+        const maxStep = Math.ceil(maxRating / 100) * 100;
+        
+        for (let r = 800; r <= maxStep; r += 100) {
+          const opt = document.createElement('option');
+          opt.value = r;
+          opt.textContent = r;
+          ratingSelect.appendChild(opt);
+        }
+        isSelectPopulated = true;
+      }
+
       const filter = document.getElementById('rating-range').value;
       
       let filtered = problems.filter(p => p.rating);
-      if (filter === '800-1199') filtered = filtered.filter(p => p.rating >= 800 && p.rating < 1200);
-      else if (filter === '1200-1599') filtered = filtered.filter(p => p.rating >= 1200 && p.rating < 1600);
-      else if (filter === '1600+') filtered = filtered.filter(p => p.rating >= 1600);
+      if (filter !== 'all') {
+        const targetRating = parseInt(filter);
+        filtered = filtered.filter(p => p.rating === targetRating);
+      }
 
       // Group by rating
       const byRating = {};
