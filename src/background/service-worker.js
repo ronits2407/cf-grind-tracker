@@ -85,53 +85,63 @@ async function checkSubmissions() {
 }
 
 async function checkFriendsActivity() {
-  let friends = await db.getFriends();
-  const myHandle = await settings.get('cfHandle');
-  if (myHandle && !friends.includes(myHandle)) {
-    friends.push(myHandle);
-  }
-  if (!friends || friends.length === 0) return;
+  const friends = [
+    'ronits2407', 'Shridhar278', '_sreedevesh', 'kaustavbhowal', 'arjund0702',
+    'ByteWarden', 'iamag47', 'Dweep007', 'Prachet1718', 'PriyanshuIITGHY2006',
+    'mumuksh736', 'Ansh949', 'UltimateAAJ', 'dhruv173', 'define_aditya',
+    'AviatorKM', 'avani_12', 'aniketchonu', 'SaylorTwift', 'sqv1nx_',
+    'northpoledagabru', 'HiyaS', 'Ayush_Kumar_Sharma', 'deepakroy13',
+    'aditeyagoyal', 'htrap2018', 'alishabasohail2022', 'ianjaliprasad'
+  ];
 
   console.log(`[CFGT] Polling activity for ${friends.length} friends...`);
+  
+  // We fetch up to 1000 recent activities to ensure we don't notify for old submissions
+  const recentActivities = await db.getFriendActivity(1000);
+  const ntfyToken = 'tk_lgbthqe3ldnhpln6blr2ho56qpc0b';
+  const ntfyTopic = await settings.get('ntfyTopic');
 
   for (const friend of friends) {
     try {
-      console.log(`[CFGT] Fetching status for: ${friend}`);
-      const response = await fetch(`https://codeforces.com/api/user.status?handle=${friend}&count=1`);
+      const response = await fetch(`https://codeforces.com/api/user.status?handle=${friend}&count=10`);
       
-      // Add a 500ms delay to avoid Codeforces API rate limiting (max 5 requests per second)
-      await new Promise(r => setTimeout(r, 500));
+      // 1 request per second
+      await new Promise(r => setTimeout(r, 1000));
       
       const data = await response.json();
       if (data.status !== 'OK' || !data.result || data.result.length === 0) continue;
       
-      const latestSub = data.result[0];
-      const acts = await db.getFriendActivity(10);
-      const alreadyProcessed = acts.find(a => a.handle === friend && a.submissionId === latestSub.id);
+      // Process from oldest to newest in the 10 fetched
+      const submissions = data.result.reverse();
       
-      if (!alreadyProcessed) {
-        await db.addFriendActivity({
-          handle: friend,
-          submissionId: latestSub.id,
-          verdict: latestSub.verdict,
-          problemName: latestSub.problem.name
-        });
+      for (const latestSub of submissions) {
+        if (latestSub.verdict === 'TESTING') continue;
         
-        const notifyAll = await settings.get('notifyAllVerdicts');
+        const alreadyProcessed = recentActivities.find(a => a.handle === friend && a.submissionId === latestSub.id);
         
-        if (latestSub.verdict === 'OK' || notifyAll) {
-          const isMe = friend === myHandle;
-          const isAC = latestSub.verdict === 'OK';
+        if (!alreadyProcessed) {
+          await db.addFriendActivity({
+            handle: friend,
+            submissionId: latestSub.id,
+            verdict: latestSub.verdict,
+            problemName: latestSub.problem.name
+          });
+          
+          recentActivities.push({ handle: friend, submissionId: latestSub.id });
           
           const title = friend;
-          const verdictStr = isAC ? 'AC' : latestSub.verdict;
-          const body = `${verdictStr} on ${latestSub.problem.name}`;
+          const verdictStr = latestSub.verdict === 'OK' ? 'AC' : latestSub.verdict;
+          const tagsStr = latestSub.problem.tags ? latestSub.problem.tags.join(', ') : 'no tags';
+          const ratingStr = latestSub.problem.rating ? latestSub.problem.rating : 'Unrated';
           
+          const body = `${verdictStr} on ${latestSub.problem.name}\nTags: [${tagsStr}]\nRating: ${ratingStr}`;
+          
+          // Browser Notification
           showBrowserNotification(title, body);
-          const phoneNtfy = await settings.get('phoneNotifications');
-          if (phoneNtfy) {
-            const topic = await settings.get('ntfyTopic');
-            await sendNtfyNotification(topic, title, body);
+          
+          // Ntfy Notification (Authenticated)
+          if (ntfyTopic) {
+            await sendNtfyNotification(ntfyTopic, title, body, null, ntfyToken);
           }
         }
       }

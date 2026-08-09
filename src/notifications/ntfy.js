@@ -1,4 +1,4 @@
-export async function sendNtfyNotification(topic, title, body, url = null) {
+export async function sendNtfyNotification(topic, title, body, url = null, token = null) {
   if (!topic) return;
   const headers = {
     'Title': title,
@@ -7,6 +7,9 @@ export async function sendNtfyNotification(topic, title, body, url = null) {
   
   if (url) {
     headers['Click'] = url;
+  }
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
   }
 
   try {
