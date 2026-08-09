@@ -59,18 +59,40 @@ function init() {
 
   const problemData = { title, contestId, index, rating, tags, url };
 
+  // Observer to kill the Codeforces "recently changed" alert
+  const alertKiller = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      for (const node of m.addedNodes) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          if (node.textContent && node.textContent.includes('problem statement has recently been changed')) {
+            node.style.display = 'none';
+          }
+          const alerts = node.querySelectorAll ? node.querySelectorAll('*') : [];
+          alerts.forEach(el => {
+            if (el.textContent && el.textContent.includes('problem statement has recently been changed')) {
+              el.style.display = 'none';
+            }
+          });
+        }
+      }
+    }
+    // Also periodic check just in case
+    document.querySelectorAll('.alert, .info, div').forEach(el => {
+      if (el.textContent && el.textContent.includes('problem statement has recently been changed')) {
+        if (el.style.display !== 'none' && el.childElementCount < 5) {
+          el.style.display = 'none';
+        }
+      }
+    });
+  });
+  alertKiller.observe(document.body, { childList: true, subtree: true });
+
   const injectPanel = (container) => {
     // If panel logic is not loaded yet, wait for it
     const checkPanelLoaded = setInterval(() => {
       if (window.CFGT_Panel) {
         clearInterval(checkPanelLoaded);
-        // Inject before #pageContent to completely evade Codeforces MutationObserver
-        const pageContent = document.getElementById('pageContent');
-        if (pageContent) {
-          window.CFGT_Panel.createPanel(pageContent, problemData);
-        } else {
-          window.CFGT_Panel.createPanel(container, problemData);
-        }
+        window.CFGT_Panel.createPanel(container, problemData);
       }
     }, 100);
   };
