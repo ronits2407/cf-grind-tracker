@@ -31,6 +31,11 @@ window.CFGT_Panel = {
     panel.innerHTML = `
       <div class="cfgt-header">
         <div class="cfgt-title"><span class="cfgt-logo">♦</span> CF GRIND TRACKER</div>
+        <div class="cfgt-modes">
+          <button class="cfgt-mode-btn active" data-mode="practice">PRACTICE</button>
+          <button class="cfgt-mode-btn" data-mode="learning">LEARNING</button>
+          <button class="cfgt-mode-btn" data-mode="contest">CONTEST</button>
+        </div>
       </div>
       
       <div class="cfgt-problem-info cfgt-confidence-medium">
@@ -38,6 +43,18 @@ window.CFGT_Panel = {
           <span class="cfgt-problem-name">${problemData.title}</span>
           <span class="cfgt-badge ${this.getRatingClass(this.data.rating)}">${this.data.rating ? '*' + this.data.rating : 'UNRATED'}</span>
         </div>
+      </div>
+
+      <!-- Practice & Learning Tools Bar -->
+      <div class="cfgt-tools-bar">
+        <button class="cfgt-tool-btn" id="cfgt-tool-tutorial">📖 Tutorial / Editorial</button>
+        <button class="cfgt-tool-btn" id="cfgt-tool-scratchpad">📝 Scratchpad Notes</button>
+        <button class="cfgt-tool-btn" id="cfgt-tool-submit">🚀 Quick Submit</button>
+      </div>
+
+      <!-- Scratchpad Area -->
+      <div class="cfgt-scratchpad" id="cfgt-scratchpad-area">
+        <textarea id="cfgt-notes-input" placeholder="Type solution approach, time complexity, DP states, or hints here... (auto-saved)"></textarea>
       </div>
 
       <div class="cfgt-timer-section">
@@ -100,7 +117,68 @@ window.CFGT_Panel = {
   },
 
   bindEvents: function() {
-    // Buttons
+    // Mode Buttons
+    const modeBtns = this.panelEl.querySelectorAll('.cfgt-mode-btn');
+    modeBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        modeBtns.forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        this.data.mode = e.target.getAttribute('data-mode');
+      });
+    });
+
+    // Practice & Learning Tools
+    const scratchpad = this.panelEl.querySelector('#cfgt-scratchpad-area');
+    const notesInput = this.panelEl.querySelector('#cfgt-notes-input');
+    const problemKey = `cfgt_notes_${this.problemData.contestId}${this.problemData.index}`;
+
+    // Load saved notes
+    if (notesInput) {
+      notesInput.value = localStorage.getItem(problemKey) || '';
+      notesInput.addEventListener('input', (e) => {
+        localStorage.setItem(problemKey, e.target.value);
+      });
+    }
+
+    // Tool: Tutorial
+    this.panelEl.querySelector('#cfgt-tool-tutorial').addEventListener('click', () => {
+      // Look for tutorial link on page
+      let tutorialLink = null;
+      const links = document.querySelectorAll('a');
+      for (const a of links) {
+        if (a.textContent.toLowerCase().includes('tutorial') || a.textContent.toLowerCase().includes('editorial')) {
+          tutorialLink = a.href;
+          break;
+        }
+      }
+      if (tutorialLink) {
+        window.open(tutorialLink, '_blank');
+      } else {
+        window.open(`https://codeforces.com/search?query=Tutorial+${this.problemData.contestId}${this.problemData.index}`, '_blank');
+      }
+    });
+
+    // Tool: Scratchpad Toggle
+    this.panelEl.querySelector('#cfgt-tool-scratchpad').addEventListener('click', () => {
+      if (scratchpad.style.display === 'block') {
+        scratchpad.style.display = 'none';
+      } else {
+        scratchpad.style.display = 'block';
+        notesInput.focus();
+      }
+    });
+
+    // Tool: Quick Submit
+    this.panelEl.querySelector('#cfgt-tool-submit').addEventListener('click', () => {
+      const submitForm = document.querySelector('form.submit-form') || document.querySelector('.submitForm') || document.querySelector('select[name="programTypeId"]');
+      if (submitForm) {
+        submitForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (this.problemData.contestId && this.problemData.index) {
+        window.location.href = `https://codeforces.com/contest/${this.problemData.contestId}/submit?problemIndex=${this.problemData.index}`;
+      }
+    });
+
+    // Control Buttons
     this.panelEl.querySelector('#cfgt-btn-start').addEventListener('click', () => this.startSolve());
     this.panelEl.querySelector('#cfgt-btn-pause').addEventListener('click', () => this.pauseSolve());
     this.panelEl.querySelector('#cfgt-btn-end').addEventListener('click', () => this.endSolve());

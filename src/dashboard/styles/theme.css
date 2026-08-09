@@ -267,3 +267,13 @@ input:focus, select:focus {
   outline: none;
   border-color: var(--accent);
 }
+
+select option {
+  background-color: #1A2634 !important;
+  color: #ECE8E1 !important;
+  padding: 8px 12px;
+}
+select option:hover, select option:focus, select option:checked {
+  background-color: #FF4655 !important;
+  color: #FFFFFF !important;
+}
