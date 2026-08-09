@@ -64,7 +64,13 @@ function init() {
     const checkPanelLoaded = setInterval(() => {
       if (window.CFGT_Panel) {
         clearInterval(checkPanelLoaded);
-        window.CFGT_Panel.createPanel(container, problemData);
+        // Inject before #pageContent to completely evade Codeforces MutationObserver
+        const pageContent = document.getElementById('pageContent');
+        if (pageContent) {
+          window.CFGT_Panel.createPanel(pageContent, problemData);
+        } else {
+          window.CFGT_Panel.createPanel(container, problemData);
+        }
       }
     }, 100);
   };
