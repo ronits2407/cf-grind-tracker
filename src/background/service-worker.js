@@ -9,15 +9,22 @@ const settings = new Settings();
 let currentSolve = null;
 
 async function setupAlarms() {
+  const allSettings = await settings.getAll();
+  console.log('[CFGT Worker] Retrieved all settings on startup:', allSettings);
+  
   chrome.alarms.get('submission-poll', (alarm) => {
     if (!alarm) chrome.alarms.create('submission-poll', { periodInMinutes: 0.5 });
   });
 
-  const pollInterval = (await settings.get('pollIntervalMinutes')) || 5;
+  const pollInterval = allSettings.pollIntervalMinutes;
+  console.log(`[CFGT Worker] Resolved pollInterval to: ${pollInterval}`);
+  
   chrome.alarms.get('friend-poll', (alarm) => {
     if (!alarm || alarm.periodInMinutes !== pollInterval) {
       chrome.alarms.create('friend-poll', { periodInMinutes: pollInterval });
       console.log(`[CFGT Worker] Alarm 'friend-poll' configured for every ${pollInterval} minutes.`);
+    } else {
+      console.log(`[CFGT Worker] Alarm 'friend-poll' already running with correct interval: ${pollInterval} minutes.`);
     }
   });
 }
