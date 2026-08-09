@@ -101,6 +101,8 @@ async function checkFriendsActivity() {
   
   const ntfyToken = 'tk_lgbthqe3ldnhpln6blr2ho56qpc0b';
   const ntfyTopic = await settings.get('ntfyTopic');
+  const phoneNotifications = await settings.get('phoneNotifications');
+  const browserNotifications = await settings.get('browserNotifications');
 
   let friendIndex = 0;
   let newSubmissionsCount = 0;
@@ -154,13 +156,17 @@ async function checkFriendsActivity() {
           const body = `${verdictStr} on ${latestSub.problem.name}\nTags: [${tagsStr}]\nRating: ${ratingStr}`;
           
           // Browser Notification
-          console.log(`[CFGT Worker] Triggering Chrome browser notification for ${friend}...`);
-          showBrowserNotification(title, body);
+          if (browserNotifications !== false) {
+            console.log(`[CFGT Worker] Triggering Chrome browser notification for ${friend}...`);
+            showBrowserNotification(title, body);
+          }
           
           // Ntfy Notification (Authenticated)
-          if (ntfyTopic) {
+          if (phoneNotifications && ntfyTopic) {
             console.log(`[CFGT Worker] Triggering Ntfy push notification to topic "${ntfyTopic}" for ${friend}...`);
             await sendNtfyNotification(ntfyTopic, title, body, null, ntfyToken);
+          } else if (!phoneNotifications) {
+            console.log(`[CFGT Worker] Phone notifications disabled in settings. Skipping Ntfy push.`);
           }
         }
       }
