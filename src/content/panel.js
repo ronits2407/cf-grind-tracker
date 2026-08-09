@@ -29,22 +29,6 @@ window.CFGT_Panel = {
     const panel = document.createElement('div');
     panel.id = 'cfgt-panel';
     panel.innerHTML = `
-      <div class="cfgt-header">
-        <div class="cfgt-title"><span class="cfgt-logo">♦</span> CF GRIND TRACKER</div>
-        <div class="cfgt-modes">
-          <button class="cfgt-mode-btn active" data-mode="practice">PRACTICE</button>
-          <button class="cfgt-mode-btn" data-mode="learning">LEARNING</button>
-          <button class="cfgt-mode-btn" data-mode="contest">CONTEST</button>
-        </div>
-      </div>
-      
-      <div class="cfgt-problem-info cfgt-confidence-medium">
-        <div>
-          <span class="cfgt-problem-name">${problemData.title}</span>
-          <span class="cfgt-badge ${this.getRatingClass(this.data.rating)}">${this.data.rating ? '*' + this.data.rating : 'UNRATED'}</span>
-        </div>
-      </div>
-
       <!-- Practice & Learning Tools Bar -->
       <div class="cfgt-tools-bar">
         <button class="cfgt-tool-btn" id="cfgt-tool-tutorial">📖 Tutorial / Editorial</button>
@@ -97,6 +81,28 @@ window.CFGT_Panel = {
     this.hostEl = host;
     this.panelEl = panel;
     
+    // Inject Mode Buttons directly into Codeforces title (light DOM)
+    const titleEl = document.querySelector('.problem-statement .header .title');
+    if (titleEl && !document.getElementById('cfgt-modes-light')) {
+      const modesDiv = document.createElement('div');
+      modesDiv.id = 'cfgt-modes-light';
+      modesDiv.innerHTML = `
+        <button class="cfgt-mode-btn-light active" data-mode="practice">PRACTICE</button>
+        <button class="cfgt-mode-btn-light" data-mode="learning">LEARNING</button>
+        <button class="cfgt-mode-btn-light" data-mode="contest">CONTEST</button>
+      `;
+      titleEl.appendChild(modesDiv);
+      
+      const lightModeBtns = modesDiv.querySelectorAll('.cfgt-mode-btn-light');
+      lightModeBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          lightModeBtns.forEach(b => b.classList.remove('active'));
+          e.target.classList.add('active');
+          this.data.mode = e.target.getAttribute('data-mode');
+        });
+      });
+    }
+
     this.bindEvents();
     this.loadSettings();
     this.updateDisplay();
@@ -113,16 +119,6 @@ window.CFGT_Panel = {
   },
 
   bindEvents: function() {
-    // Mode Buttons
-    const modeBtns = this.panelEl.querySelectorAll('.cfgt-mode-btn');
-    modeBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        modeBtns.forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
-        this.data.mode = e.target.getAttribute('data-mode');
-      });
-    });
-
     // Practice & Learning Tools
     const scratchpad = this.panelEl.querySelector('#cfgt-scratchpad-area');
     const notesInput = this.panelEl.querySelector('#cfgt-notes-input');
