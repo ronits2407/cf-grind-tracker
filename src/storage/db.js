@@ -49,7 +49,16 @@ export class DB {
   async addProblem(record) {
     const store = await this._transaction('problems', 'readwrite');
     return new Promise((resolve, reject) => {
-      const request = store.add({ ...record, timestamp: Date.now() });
+      const request = store.add({ ...record, timestamp: record.timestamp || Date.now() });
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async updateProblem(record) {
+    const store = await this._transaction('problems', 'readwrite');
+    return new Promise((resolve, reject) => {
+      const request = store.put(record);
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
     });

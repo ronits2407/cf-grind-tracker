@@ -91,12 +91,8 @@ window.CFGT_Panel = {
     
     shadow.appendChild(panel);
 
-    // Insert host AFTER container (outside .problem-statement to avoid Codeforces DOM watchers)
-    if (container.nextSibling) {
-      container.parentNode.insertBefore(host, container.nextSibling);
-    } else {
-      container.parentNode.appendChild(host);
-    }
+    // Insert host ABOVE container (before .problem-statement as requested)
+    container.parentNode.insertBefore(host, container);
 
     this.hostEl = host;
     this.panelEl = panel;
@@ -283,6 +279,7 @@ window.CFGT_Panel = {
     const isTut = this.panelEl.querySelector('#chk-tut').checked;
     const isSol = this.panelEl.querySelector('#chk-sol').checked;
     const isAi = this.panelEl.querySelector('#chk-ai').checked;
+    const notes = this.panelEl.querySelector('#cfgt-notes-input').value.trim();
     
     const payload = {
       problemData: {
@@ -292,7 +289,7 @@ window.CFGT_Panel = {
         rating: this.problemData.rating || 1200,
         title: this.problemData.title,
         tags: this.problemData.tags || [],
-        mode: this.data.mode
+        mode: this.data.mode || 'practice'
       },
       solveData: {
         solveTime: this.data.elapsedSeconds * 1000, // ms
@@ -301,6 +298,7 @@ window.CFGT_Panel = {
         tutorialUsed: isTut,
         othersUsed: isSol,
         independent: isIndep,
+        notes: notes,
         timestamp: Date.now()
       }
     };

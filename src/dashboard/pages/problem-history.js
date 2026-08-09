@@ -37,6 +37,7 @@ const html = `
         <th data-sort="wa">WA <span></span></th>
         <th data-sort="ai">AI <span></span></th>
         <th data-sort="date">Date <span></span></th>
+        <th>Notes</th>
       </tr>
     </thead>
     <tbody id="history-tbody">
@@ -52,6 +53,18 @@ const html = `
   <span id="page-info">Page 1 of 1</span>
   <button id="page-next" class="btn btn-secondary">Next</button>
 </div>
+
+<!-- Notes Modal -->
+<div id="notes-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:999; align-items:center; justify-content:center;">
+  <div style="background:var(--bg-surface); border:1px solid var(--accent); padding:24px; width:500px; max-width:90vw; position:relative;">
+    <h3 id="modal-problem-title" style="margin-bottom:12px; color:var(--text);">Scratchpad Notes</h3>
+    <textarea id="modal-notes-text" style="width:100%; height:150px; background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text); padding:10px; font-family:monospace; margin-bottom:15px;" placeholder="Write your scratchpad notes, time complexity, DP states, or hints here..."></textarea>
+    <div style="display:flex; justify-content:flex-end; gap:10px;">
+      <button id="modal-cancel-btn" class="btn btn-secondary">Cancel</button>
+      <button id="modal-save-btn" class="btn btn-primary">Save Notes</button>
+    </div>
+  </div>
+</div>
 `;
 
 let problems = [];
@@ -60,6 +73,7 @@ let currentPage = 1;
 const itemsPerPage = 20;
 let sortCol = 'date';
 let sortAsc = false;
+let activeProblemForNotes = null;
 
 function formatTime(secs) {
   if (!secs) return '-';
@@ -71,6 +85,26 @@ function formatTime(secs) {
 function formatDate(ts) {
   if (!ts) return '-';
   return new Date(ts).toLocaleDateString();
+}
+
+function openNotesModal(problem) {
+  activeProblemForNotes = problem;
+  const modal = document.getElementById('notes-modal');
+  const title = document.getElementById('modal-problem-title');
+  const textarea = document.getElementById('modal-notes-text');
+
+  // Also check localStorage backup if notes isn't in p.notes
+  const key = `cfgt_notes_${problem.contestId}${problem.index}`;
+  const localNotes = localStorage.getItem(key) || '';
+
+  title.textContent = `Scratchpad Notes: ${problem.title || problem.name || problem.problemId}`;
+  textarea.value = problem.notes || localNotes;
+  modal.style.display = 'flex';
+}
+
+function closeNotesModal() {
+  document.getElementById('notes-modal').style.display = 'none';
+  activeProblemForNotes = null;
 }
 
 function renderTable() {
@@ -98,18 +132,32 @@ function renderTable() {
   const end = start + itemsPerPage;
   const pageItems = filtered.slice(start, end);
   
-  pageItems.forEach(p => {
+  pageItems.forEach((p, idx) => {
+    const key = `cfgt_notes_${p.contestId}${p.index}`;
+    const hasNotes = !!(p.notes || localStorage.getItem(key));
+    const btnColor = hasNotes ? '#4FFFBE' : 'var(--text-muted)';
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><a href="https://codeforces.com/contest/${p.contestId}/problem/${p.index}" target="_blank" style="color:var(--text); text-decoration:underline;">${p.name || (p.contestId ? p.contestId + p.index : p.problemId)}</a></td>
+      <td><a href="https://codeforces.com/contest/${p.contestId}/problem/${p.index}" target="_blank" style="color:var(--text); text-decoration:underline;">${p.title || p.name || (p.contestId ? p.contestId + p.index : p.problemId)}</a></td>
       <td><span class="rating-badge">${p.rating || '?'}</span></td>
       <td>${p.mode || 'practice'}</td>
       <td>${formatTime(p.solveTime / 1000)}</td>
       <td>${p.wrongSubmissions || p.waCount || 0}</td>
       <td>${p.aiUsed ? '✓' : '✗'}</td>
       <td>${formatDate(p.timestamp)}</td>
+      <td><button class="btn-notes" data-idx="${start + idx}" style="background:transparent; border:1px solid ${btnColor}; color:${btnColor}; cursor:pointer; padding:2px 8px; font-size:12px;">📝 Notes</button></td>
     `;
     tbody.appendChild(tr);
+  });
+
+  // Attach notes button handlers
+  const noteBtns = tbody.querySelectorAll('.btn-notes');
+  noteBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const idx = parseInt(e.target.getAttribute('data-idx'));
+      openNotesModal(filtered[idx]);
+    });
   });
 }
 
@@ -219,6 +267,26 @@ async function init() {
     dlAnchorElem.click();
   });
   
+  addListener(document.getElementById('modal-cancel-btn'), 'click', closeNotesModal);
+
+  addListener(document.getElementById('modal-save-btn'), 'click', async () => {
+    if (!activeProblemForNotes) return;
+    const text = document.getElementById('modal-notes-text').value.trim();
+    activeProblemForNotes.notes = text;
+
+    const key = `cfgt_notes_${activeProblemForNotes.contestId}${activeProblemForNotes.index}`;
+    localStorage.setItem(key, text);
+
+    if (window.cfgtDB && window.cfgtDB.updateProblem && activeProblemForNotes.id) {
+      try {
+        await window.cfgtDB.updateProblem(activeProblemForNotes);
+      } catch(e) { console.error('Failed to update problem notes in DB', e); }
+    }
+
+    closeNotesModal();
+    renderTable();
+  });
+
   addListener(document.getElementById('export-pdf-btn'), 'click', () => {
     alert('PDF export coming soon');
   });
