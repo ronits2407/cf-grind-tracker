@@ -68,6 +68,11 @@ const html = `
     <button id="btn-reset-data" class="btn btn-secondary" style="border-color:#FF4655; color:#FF4655;">Reset Extension Data</button>
   </div>
 </div>
+
+<div class="val-panel settings-section" style="margin-top: 20px; display:flex; justify-content:space-between; align-items:center; background:transparent; border:none;">
+  <span id="save-status" style="color:var(--accent-green); font-weight:600; opacity:0; transition:opacity 0.3s;">Settings saved successfully!</span>
+  <button id="btn-save-settings" class="btn btn-primary" style="padding: 12px 24px; font-size: 16px;">Save Changes</button>
+</div>
 `;
 
 const listeners = [];
@@ -133,15 +138,22 @@ function init() {
   
   addListener(document.getElementById('btn-validate-handle'), 'click', validateHandle);
   
-  addListener(document.getElementById('setting-handle'), 'change', (e) => saveSetting('cfHandle', e.target.value));
-  addListener(document.getElementById('setting-ntfy'), 'change', (e) => saveSetting('ntfyTopic', e.target.value));
-  addListener(document.getElementById('setting-notify-browser'), 'change', (e) => saveSetting('browserNotifications', e.target.checked));
-  addListener(document.getElementById('setting-notify-phone'), 'change', (e) => saveSetting('phoneNotifications', e.target.checked));
-  addListener(document.getElementById('setting-notify-all'), 'change', (e) => saveSetting('notifyAllVerdicts', e.target.checked));
-  addListener(document.getElementById('setting-enable-stalker'), 'change', (e) => saveSetting('enableStalker', e.target.checked));
-  addListener(document.getElementById('setting-poll-interval'), 'change', (e) => saveSetting('pollIntervalMinutes', parseInt(e.target.value)));
-  addListener(document.getElementById('setting-request-delay'), 'change', (e) => saveSetting('requestDelayMs', parseInt(e.target.value)));
-  
+  addListener(document.getElementById('btn-save-settings'), 'click', () => {
+    saveSetting('cfHandle', document.getElementById('setting-handle').value);
+    saveSetting('ntfyTopic', document.getElementById('setting-ntfy').value);
+    saveSetting('browserNotifications', document.getElementById('setting-notify-browser').checked);
+    saveSetting('phoneNotifications', document.getElementById('setting-notify-phone').checked);
+    saveSetting('notifyAllVerdicts', document.getElementById('setting-notify-all').checked);
+    saveSetting('enableStalker', document.getElementById('setting-enable-stalker').checked);
+    saveSetting('pollIntervalMinutes', parseInt(document.getElementById('setting-poll-interval').value));
+    saveSetting('requestDelayMs', parseInt(document.getElementById('setting-request-delay').value));
+    
+    const status = document.getElementById('save-status');
+    status.style.opacity = '1';
+    setTimeout(() => {
+      if (status) status.style.opacity = '0';
+    }, 3000);
+  });
 
   
   addListener(document.getElementById('btn-export-data'), 'click', async () => {
