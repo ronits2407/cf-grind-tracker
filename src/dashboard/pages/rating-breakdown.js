@@ -22,8 +22,6 @@ export default {
                 <th>Rating</th>
                 <th>Solves</th>
                 <th>Avg Time</th>
-                <th>Avg SPI</th>
-                <th>Confidence</th>
               </tr>
             </thead>
             <tbody id="rating-table-body">
@@ -34,7 +32,7 @@ export default {
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
           <div>
-            <h3 style="font-family: var(--font-val); color: var(--text-secondary); margin-bottom: 12px;">TAG RADAR</h3>
+            <h3 style="font-family: var(--font-val); color: var(--text-secondary); margin-bottom: 12px;">TOP TAGS</h3>
             <div class="chart-container" style="height: 300px;">
               <canvas id="radarChart"></canvas>
             </div>
@@ -79,7 +77,7 @@ export default {
       imprContainer.innerHTML = '';
 
       if (Object.keys(byRating).length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No data for selected range.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center;">No data for selected range.</td></tr>';
         imprContainer.innerHTML = '<div style="color: var(--text-secondary);">No data to show improvement trends.</div>';
       } else {
         const sortedRatings = Object.keys(byRating).map(Number).sort((a,b) => a - b);
@@ -87,30 +85,18 @@ export default {
         sortedRatings.forEach(r => {
           const arr = byRating[r];
           const avgTime = arr.reduce((acc, p) => acc + (p.solveTime || 0), 0) / arr.length;
-          const avgSpi = arr.reduce((acc, p) => acc + (p.spi || 0), 0) / arr.length;
-          let conf = 'Medium';
-          if (avgSpi > 1.2) conf = 'High';
-          else if (avgSpi < 0.8) conf = 'Low';
-
-          let timeColor = '#ECE8E1';
-          if (avgSpi > 1.2) timeColor = 'var(--accent-green)';
-          else if (avgSpi < 0.8) timeColor = 'var(--accent)';
 
           // Table row
           tbody.innerHTML += `
             <tr>
               <td>${r}</td>
               <td>${arr.length}</td>
-              <td><span style="color: ${timeColor}">${Math.round(avgTime / 60000)}m ${Math.round((avgTime % 60000) / 1000)}s</span></td>
-              <td>${avgSpi.toFixed(2)}</td>
-              <td>${conf}</td>
+              <td><span>${Math.round(avgTime / 60000)}m ${Math.round((avgTime % 60000) / 1000)}s</span></td>
             </tr>
           `;
 
           // Improvement trend (only if >= 10 solves)
           if (arr.length >= 10) {
-            // arr is sorted by timestamp desc by default usually, assuming getProblems returns newest first.
-            // Let's sort to be safe: oldest to newest
             const sortedArr = [...arr].sort((a,b) => a.timestamp - b.timestamp);
             const first5 = sortedArr.slice(0, 5);
             const last5 = sortedArr.slice(-5);
@@ -139,21 +125,19 @@ export default {
         }
       }
 
-      // Tag Radar Chart
+      // Tag Radar Chart (Solves Count)
       const tags = {};
       filtered.forEach(p => {
         if (p.tags && Array.isArray(p.tags)) {
           p.tags.forEach(t => {
-            if (!tags[t]) tags[t] = { count: 0, spiSum: 0 };
-            tags[t].count++;
-            tags[t].spiSum += (p.spi || 1.0);
+            tags[t] = (tags[t] || 0) + 1;
           });
         }
       });
 
       // Get top 6 tags
       const topTags = Object.keys(tags)
-        .map(t => ({ tag: t, avgSpi: tags[t].spiSum / tags[t].count, count: tags[t].count }))
+        .map(t => ({ tag: t, count: tags[t] }))
         .sort((a,b) => b.count - a.count)
         .slice(0, 6);
 
@@ -168,8 +152,8 @@ export default {
           data: {
             labels: topTags.map(t => t.tag),
             datasets: [{
-              label: 'Avg SPI by Tag',
-              data: topTags.map(t => t.avgSpi),
+              label: 'Solves by Tag',
+              data: topTags.map(t => t.count),
               backgroundColor: 'rgba(255, 70, 85, 0.2)',
               borderColor: '#FF4655',
               pointBackgroundColor: '#FF4655'

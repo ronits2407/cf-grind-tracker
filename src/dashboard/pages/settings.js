@@ -35,18 +35,6 @@ const html = `
 </div>
 
 <div class="val-panel settings-section" style="margin-top: 20px;">
-  <h3>SPI Tuning</h3>
-  <div style="margin-top:10px;">
-    <label>K-Factor (16-64): <span id="val-k">32</span></label>
-    <input type="range" id="setting-k" min="16" max="64" value="32" style="width:100%; accent-color:var(--accent);">
-  </div>
-  <div style="margin-top:10px;">
-    <label>Penalty Multiplier (0.7-1.0): <span id="val-pen">0.9</span></label>
-    <input type="range" id="setting-penalty" min="0.7" max="1.0" step="0.05" value="0.9" style="width:100%; accent-color:var(--accent);">
-  </div>
-</div>
-
-<div class="val-panel settings-section" style="margin-top: 20px;">
   <h3>Data Management</h3>
   <div style="display:flex; gap: 15px; margin-top:15px;">
     <button id="btn-export-data" class="btn btn-primary">Export All Data</button>
@@ -65,20 +53,12 @@ function addListener(el, type, handler) {
 
 async function loadSettings() {
   if(chrome && chrome.storage) {
-    chrome.storage.sync.get(['cfHandle', 'ntfyTopic', 'notifyBrowser', 'phoneNotifications', 'notifyAllVerdicts', 'spiK', 'spiPenalty'], (res) => {
+    chrome.storage.sync.get(['cfHandle', 'ntfyTopic', 'notifyBrowser', 'phoneNotifications', 'notifyAllVerdicts'], (res) => {
       if(res.cfHandle) document.getElementById('setting-handle').value = res.cfHandle;
       if(res.ntfyTopic) document.getElementById('setting-ntfy').value = res.ntfyTopic;
       if(res.notifyBrowser !== undefined) document.getElementById('setting-notify-browser').checked = res.notifyBrowser;
       if(res.phoneNotifications !== undefined) document.getElementById('setting-notify-phone').checked = res.phoneNotifications;
       if(res.notifyAllVerdicts !== undefined) document.getElementById('setting-notify-all').checked = res.notifyAllVerdicts;
-      if(res.spiK) {
-        document.getElementById('setting-k').value = res.spiK;
-        document.getElementById('val-k').textContent = res.spiK;
-      }
-      if(res.spiPenalty) {
-        document.getElementById('setting-penalty').value = res.spiPenalty;
-        document.getElementById('val-pen').textContent = res.spiPenalty;
-      }
     });
   }
 }
@@ -129,15 +109,7 @@ function init() {
   addListener(document.getElementById('setting-notify-phone'), 'change', (e) => saveSetting('phoneNotifications', e.target.checked));
   addListener(document.getElementById('setting-notify-all'), 'change', (e) => saveSetting('notifyAllVerdicts', e.target.checked));
   
-  addListener(document.getElementById('setting-k'), 'input', (e) => {
-    document.getElementById('val-k').textContent = e.target.value;
-    saveSetting('spiK', parseInt(e.target.value));
-  });
-  
-  addListener(document.getElementById('setting-penalty'), 'input', (e) => {
-    document.getElementById('val-pen').textContent = e.target.value;
-    saveSetting('spiPenalty', parseFloat(e.target.value));
-  });
+
   
   addListener(document.getElementById('btn-export-data'), 'click', async () => {
     if(window.cfgtDB && window.cfgtDB.getProblems) {

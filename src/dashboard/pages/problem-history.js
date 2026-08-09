@@ -36,7 +36,6 @@ const html = `
         <th data-sort="solveTime">Solve Time <span></span></th>
         <th data-sort="wa">WA <span></span></th>
         <th data-sort="ai">AI <span></span></th>
-        <th data-sort="spi">SPI <span></span></th>
         <th data-sort="date">Date <span></span></th>
       </tr>
     </thead>
@@ -102,19 +101,7 @@ function renderTable() {
   pageItems.forEach(p => {
     const tr = document.createElement('tr');
     
-    let spiColor = '';
-    if (p.spi) {
-      spiColor = p.spi > 1 ? '#4FFFBE' : '#FF4655';
-    }
-    
-    tr.innerHTML = `
-      <td><a href="https://codeforces.com/contest/${p.contestId}/problem/${p.index}" target="_blank" style="color:var(--text); text-decoration:underline;">${p.name || p.contestId + p.index}</a></td>
-      <td><span class="rating-badge">${p.rating || '?'}</span></td>
-      <td>${p.mode || 'practice'}</td>
-      <td>${formatTime(p.solveTime)}</td>
-      <td>${p.waCount || 0}</td>
       <td>${p.aiUsed ? '✓' : '✗'}</td>
-      <td style="color:${spiColor}">${p.spi ? p.spi.toFixed(2) : '-'}</td>
       <td>${formatDate(p.timestamp)}</td>
     `;
     tbody.appendChild(tr);
@@ -154,7 +141,6 @@ function applyFiltersAndSort() {
       case 'solveTime': valA = a.solveTime || 0; valB = b.solveTime || 0; break;
       case 'wa': valA = a.waCount || 0; valB = b.waCount || 0; break;
       case 'ai': valA = a.aiUsed ? 1 : 0; valB = b.aiUsed ? 1 : 0; break;
-      case 'spi': valA = a.spi || 0; valB = b.spi || 0; break;
       case 'date': valA = a.timestamp || 0; valB = b.timestamp || 0; break;
       default: valA = a.timestamp || 0; valB = b.timestamp || 0; break;
     }
