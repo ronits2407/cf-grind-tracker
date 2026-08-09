@@ -82,6 +82,16 @@ function init() {
     });
     observer.observe(document.body, { childList: true, subtree: true });
   }
+
+  // Force hide the diff-notifier popup via CSS because Codeforces caches the 
+  // previously corrupted statementText in localStorage for 6 hours.
+  const style = document.createElement('style');
+  style.textContent = `
+    .problemindexholder .diff-notifier {
+      display: none !important;
+    }
+  `;
+  document.head.appendChild(style);
 }
 
 if (document.readyState === 'loading') {
