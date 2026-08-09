@@ -1,7 +1,6 @@
 import { DB } from '../storage/db.js';
 import { Settings } from '../storage/settings.js';
 import overviewPage from './pages/overview.js';
-import modeStatsPage from './pages/mode-stats.js';
 import ratingBreakdownPage from './pages/rating-breakdown.js';
 import problemHistoryPage from './pages/problem-history.js';
 import friendsPage from './pages/friends.js';
@@ -9,7 +8,6 @@ import settingsPage from './pages/settings.js';
 
 const pages = {
   'overview': overviewPage,
-  'mode-stats': modeStatsPage,
   'rating-breakdown': ratingBreakdownPage,
   'problem-history': problemHistoryPage,
   'friends': friendsPage,

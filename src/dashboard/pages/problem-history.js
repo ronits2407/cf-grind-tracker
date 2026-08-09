@@ -11,6 +11,7 @@ const html = `
   <select id="filter-mode" class="val-select">
     <option value="all">All Modes</option>
     <option value="practice">Practice</option>
+    <option value="learning">Learning</option>
     <option value="contest">Contest</option>
   </select>
   <select id="filter-rating" class="val-select">
