@@ -47,10 +47,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   navigateTo(initialPage);
 });
 
-function updateSidebar() {
+async function updateSidebar() {
   document.getElementById('sidebar-rating').textContent = '';
   document.getElementById('sidebar-rank-name').textContent = window.cfgtState.cfHandle;
-  document.getElementById('sidebar-rank-icon').textContent = window.cfgtState.cfHandle.charAt(0).toUpperCase();
+  
+  const iconContainer = document.getElementById('sidebar-rank-icon');
+  if (window.cfgtState.cfHandle === 'Guest') {
+    iconContainer.textContent = 'G';
+    return;
+  }
+  
+  // Set initial letter
+  iconContainer.textContent = window.cfgtState.cfHandle.charAt(0).toUpperCase();
+  
+  try {
+    const res = await fetch(`https://codeforces.com/api/user.info?handles=${window.cfgtState.cfHandle}`);
+    const data = await res.json();
+    if (data.status === 'OK' && data.result.length > 0) {
+      const avatarUrl = data.result[0].titlePhoto || data.result[0].avatar;
+      if (avatarUrl) {
+        // Handle protocol-relative URLs returned by CF (e.g., //userpic.codeforces.org/...)
+        const fullUrl = avatarUrl.startsWith('//') ? 'https:' + avatarUrl : avatarUrl;
+        iconContainer.innerHTML = `<img src="${fullUrl}" style="width:100%; height:100%; border-radius:inherit; object-fit:cover;" alt="Avatar">`;
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load CF avatar', e);
+  }
 }
 
 async function navigateTo(pageId) {
