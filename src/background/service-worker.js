@@ -93,22 +93,37 @@ async function checkFriendsActivity() {
     'aditeyagoyal', 'htrap2018', 'alishabasohail2022', 'ianjaliprasad'
   ];
 
-  console.log(`[CFGT] Polling activity for ${friends.length} friends...`);
+  console.log(`[CFGT Worker] --------------------------------------------------`);
+  console.log(`[CFGT Worker] Starting friend activity check for ${friends.length} handles at ${new Date().toLocaleTimeString()}...`);
   
-  // We fetch up to 1000 recent activities to ensure we don't notify for old submissions
   const recentActivities = await db.getFriendActivity(1000);
+  console.log(`[CFGT Worker] Loaded ${recentActivities.length} existing activity records from IndexedDB`);
+  
   const ntfyToken = 'tk_lgbthqe3ldnhpln6blr2ho56qpc0b';
   const ntfyTopic = await settings.get('ntfyTopic');
 
+  let friendIndex = 0;
+  let newSubmissionsCount = 0;
+
   for (const friend of friends) {
+    friendIndex++;
     try {
+      console.log(`[CFGT Worker] [${friendIndex}/${friends.length}] Fetching user.status for handle: ${friend}`);
       const response = await fetch(`https://codeforces.com/api/user.status?handle=${friend}&count=10`);
       
-      // 1 request per second
+      // 1 request per second as per specification
       await new Promise(r => setTimeout(r, 1000));
       
+      if (!response.ok) {
+        console.warn(`[CFGT Worker] Non-OK HTTP response (${response.status}) for ${friend}`);
+        continue;
+      }
+
       const data = await response.json();
-      if (data.status !== 'OK' || !data.result || data.result.length === 0) continue;
+      if (data.status !== 'OK' || !data.result) {
+        console.warn(`[CFGT Worker] Codeforces API returned non-OK status for ${friend}:`, data.comment || data.status);
+        continue;
+      }
       
       // Process from oldest to newest in the 10 fetched
       const submissions = data.result.reverse();
@@ -119,6 +134,9 @@ async function checkFriendsActivity() {
         const alreadyProcessed = recentActivities.find(a => a.handle === friend && a.submissionId === latestSub.id);
         
         if (!alreadyProcessed) {
+          newSubmissionsCount++;
+          console.log(`[CFGT Worker] 🔔 NEW SUBMISSION DETECTED! Handle: ${friend}, Sub ID: ${latestSub.id}, Verdict: ${latestSub.verdict}, Problem: ${latestSub.problem.name}`);
+          
           await db.addFriendActivity({
             handle: friend,
             submissionId: latestSub.id,
@@ -136,18 +154,23 @@ async function checkFriendsActivity() {
           const body = `${verdictStr} on ${latestSub.problem.name}\nTags: [${tagsStr}]\nRating: ${ratingStr}`;
           
           // Browser Notification
+          console.log(`[CFGT Worker] Triggering Chrome browser notification for ${friend}...`);
           showBrowserNotification(title, body);
           
           // Ntfy Notification (Authenticated)
           if (ntfyTopic) {
+            console.log(`[CFGT Worker] Triggering Ntfy push notification to topic "${ntfyTopic}" for ${friend}...`);
             await sendNtfyNotification(ntfyTopic, title, body, null, ntfyToken);
           }
         }
       }
     } catch (e) {
-      console.error('Error fetching friend activity for', friend, e);
+      console.error(`[CFGT Worker] Error fetching friend activity for ${friend}:`, e);
     }
   }
+  
+  console.log(`[CFGT Worker] Polling cycle complete. Found ${newSubmissionsCount} new submissions.`);
+  console.log(`[CFGT Worker] --------------------------------------------------`);
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
