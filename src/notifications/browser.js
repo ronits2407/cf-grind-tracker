@@ -20,7 +20,7 @@ export function showBrowserNotification(title, body, url = null) {
   const notifId = 'cfgt-' + Date.now();
   chrome.notifications.create(notifId, {
     type: 'basic',
-    iconUrl: chrome.runtime.getURL('src/assets/icons/icon128.svg'),
+    iconUrl: chrome.runtime.getURL('src/assets/icons/icon.png'),
     title: title,
     message: body
   }, () => {
