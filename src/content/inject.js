@@ -27,42 +27,6 @@ function init() {
   (document.head || document.documentElement).appendChild(script);
   script.remove();
 
-  // Inject CSS for light DOM elements (like mode buttons inside CF title)
-  if (!document.getElementById('cfgt-light-styles')) {
-    const style = document.createElement('style');
-    style.id = 'cfgt-light-styles';
-    style.textContent = `
-      #cfgt-modes-light {
-        display: inline-flex;
-        gap: 8px;
-        margin-left: 20px;
-        vertical-align: middle;
-      }
-      .cfgt-mode-btn-light {
-        background: transparent;
-        border: 1px solid #4F5E7B;
-        color: #8C9BAB;
-        padding: 4px 12px;
-        border-radius: 4px;
-        font-family: 'Oswald', sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      .cfgt-mode-btn-light:hover {
-        background: rgba(79, 94, 123, 0.2);
-        color: #ECE8E1;
-      }
-      .cfgt-mode-btn-light.active {
-        background: #FF4655;
-        border-color: #FF4655;
-        color: #ECE8E1;
-      }
-    `;
-    (document.head || document.documentElement).appendChild(style);
-  }
-
   const titleEl = document.querySelector('.title');
   const title = titleEl ? titleEl.textContent.trim() : 'Unknown Problem';
   
