@@ -4,6 +4,8 @@ const DEFAULT_SETTINGS = {
   browserNotifications: true,
   phoneNotifications: false,
   notifyAllVerdicts: false,
+  pollIntervalMinutes: 5,
+  requestDelayMs: 1000,
   friendHandles: [],
   shortcutStart: 'Ctrl+Shift+S',
   shortcutEnd: 'Ctrl+Shift+E',

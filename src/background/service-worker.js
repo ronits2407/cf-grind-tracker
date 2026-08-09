@@ -8,17 +8,29 @@ const db = new DB();
 const settings = new Settings();
 let currentSolve = null;
 
-function setupAlarms() {
+async function setupAlarms() {
   chrome.alarms.get('submission-poll', (alarm) => {
     if (!alarm) chrome.alarms.create('submission-poll', { periodInMinutes: 0.5 });
   });
+
+  const pollInterval = (await settings.get('pollIntervalMinutes')) || 5;
   chrome.alarms.get('friend-poll', (alarm) => {
-    if (!alarm) chrome.alarms.create('friend-poll', { periodInMinutes: 1 });
+    if (!alarm || alarm.periodInMinutes !== pollInterval) {
+      chrome.alarms.create('friend-poll', { periodInMinutes: pollInterval });
+      console.log(`[CFGT Worker] Alarm 'friend-poll' configured for every ${pollInterval} minutes.`);
+    }
   });
 }
 
 chrome.runtime.onInstalled.addListener(setupAlarms);
 chrome.runtime.onStartup.addListener(setupAlarms);
+
+settings.onChange((changes) => {
+  if (changes.pollIntervalMinutes) {
+    console.log(`[CFGT Worker] Polling interval setting changed to ${changes.pollIntervalMinutes} minutes. Updating alarm...`);
+    chrome.alarms.create('friend-poll', { periodInMinutes: changes.pollIntervalMinutes });
+  }
+});
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === 'submission-poll' && currentSolve) {
@@ -93,8 +105,11 @@ async function checkFriendsActivity() {
     'aditeyagoyal', 'htrap2018', 'alishabasohail2022', 'ianjaliprasad'
   ];
 
+  const pollInterval = (await settings.get('pollIntervalMinutes')) || 5;
+  const requestDelayMs = (await settings.get('requestDelayMs')) || 1000;
+
   console.log(`[CFGT Worker] --------------------------------------------------`);
-  console.log(`[CFGT Worker] Starting friend activity check for ${friends.length} handles at ${new Date().toLocaleTimeString()}...`);
+  console.log(`[CFGT Worker] Starting friend activity check for ${friends.length} handles (Interval: ${pollInterval}m, Per-request delay: ${requestDelayMs}ms) at ${new Date().toLocaleTimeString()}...`);
   
   const recentActivities = await db.getFriendActivity(1000);
   console.log(`[CFGT Worker] Loaded ${recentActivities.length} existing activity records from IndexedDB`);
@@ -113,8 +128,8 @@ async function checkFriendsActivity() {
       console.log(`[CFGT Worker] [${friendIndex}/${friends.length}] Fetching user.status for handle: ${friend}`);
       const response = await fetch(`https://codeforces.com/api/user.status?handle=${friend}&count=10`);
       
-      // 1 request per second as per specification
-      await new Promise(r => setTimeout(r, 1000));
+      // Delay between handles based on settings
+      await new Promise(r => setTimeout(r, requestDelayMs));
       
       if (!response.ok) {
         console.warn(`[CFGT Worker] Non-OK HTTP response (${response.status}) for ${friend}`);

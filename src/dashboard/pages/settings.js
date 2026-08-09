@@ -35,6 +35,29 @@ const html = `
 </div>
 
 <div class="val-panel settings-section" style="margin-top: 20px;">
+  <h3>Polling & Rate Limits</h3>
+  <div style="display:flex; gap:10px; margin-top:15px; align-items:center;">
+    <label style="width: 200px;">Check Cycle Interval:</label>
+    <select id="setting-poll-interval" class="val-select" style="flex:1;">
+      <option value="1">Every 1 Minute</option>
+      <option value="2">Every 2 Minutes</option>
+      <option value="5">Every 5 Minutes (Default)</option>
+      <option value="10">Every 10 Minutes</option>
+      <option value="15">Every 15 Minutes</option>
+    </select>
+  </div>
+  <div style="display:flex; gap:10px; margin-top:15px; align-items:center;">
+    <label style="width: 200px;">Delay Between Friends:</label>
+    <select id="setting-request-delay" class="val-select" style="flex:1;">
+      <option value="500">500 ms (0.5s)</option>
+      <option value="1000">1000 ms (1s - Default)</option>
+      <option value="2000">2000 ms (2s)</option>
+      <option value="3000">3000 ms (3s)</option>
+    </select>
+  </div>
+</div>
+
+<div class="val-panel settings-section" style="margin-top: 20px;">
   <h3>Data Management</h3>
   <div style="display:flex; gap: 15px; margin-top:15px;">
     <button id="btn-export-data" class="btn btn-primary">Export All Data</button>
@@ -53,12 +76,14 @@ function addListener(el, type, handler) {
 
 async function loadSettings() {
   if(chrome && chrome.storage) {
-    chrome.storage.sync.get(['cfHandle', 'ntfyTopic', 'notifyBrowser', 'phoneNotifications', 'notifyAllVerdicts'], (res) => {
+    chrome.storage.sync.get(['cfHandle', 'ntfyTopic', 'notifyBrowser', 'phoneNotifications', 'notifyAllVerdicts', 'pollIntervalMinutes', 'requestDelayMs'], (res) => {
       if(res.cfHandle) document.getElementById('setting-handle').value = res.cfHandle;
       if(res.ntfyTopic) document.getElementById('setting-ntfy').value = res.ntfyTopic;
       if(res.notifyBrowser !== undefined) document.getElementById('setting-notify-browser').checked = res.notifyBrowser;
       if(res.phoneNotifications !== undefined) document.getElementById('setting-notify-phone').checked = res.phoneNotifications;
       if(res.notifyAllVerdicts !== undefined) document.getElementById('setting-notify-all').checked = res.notifyAllVerdicts;
+      if(res.pollIntervalMinutes) document.getElementById('setting-poll-interval').value = res.pollIntervalMinutes;
+      if(res.requestDelayMs) document.getElementById('setting-request-delay').value = res.requestDelayMs;
     });
   }
 }
@@ -108,6 +133,8 @@ function init() {
   addListener(document.getElementById('setting-notify-browser'), 'change', (e) => saveSetting('notifyBrowser', e.target.checked));
   addListener(document.getElementById('setting-notify-phone'), 'change', (e) => saveSetting('phoneNotifications', e.target.checked));
   addListener(document.getElementById('setting-notify-all'), 'change', (e) => saveSetting('notifyAllVerdicts', e.target.checked));
+  addListener(document.getElementById('setting-poll-interval'), 'change', (e) => saveSetting('pollIntervalMinutes', parseInt(e.target.value)));
+  addListener(document.getElementById('setting-request-delay'), 'change', (e) => saveSetting('requestDelayMs', parseInt(e.target.value)));
   
 
   
