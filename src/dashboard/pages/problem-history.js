@@ -3,7 +3,6 @@ const html = `
   <h2>Problem History</h2>
   <div class="header-actions">
     <button id="export-json-btn" class="btn btn-primary">Export JSON</button>
-    <button id="export-pdf-btn" class="btn btn-secondary">Export PDF</button>
   </div>
 </div>
 <div class="history-controls val-panel">
@@ -288,9 +287,7 @@ async function init() {
     renderTable();
   });
 
-  addListener(document.getElementById('export-pdf-btn'), 'click', () => {
-    alert('PDF export coming soon');
-  });
+
 }
 
 function destroy() {
