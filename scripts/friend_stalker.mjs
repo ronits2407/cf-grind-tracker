@@ -41,9 +41,9 @@ async function sendNtfy(title, body) {
   }
 }
 
-export async function runStalker() {
+async function run() {
   console.log(`==================================================`);
-  console.log(`[Stalker Bot] Starting Friend Stalker Check`);
+  console.log(`[Stalker Bot] Starting GitHub Actions Friend Stalker`);
   console.log(`[Stalker Bot] Time: ${new Date().toISOString()}`);
   console.log(`[Stalker Bot] Tracking ${FRIENDS.length} friends`);
   console.log(`[Stalker Bot] Target Ntfy Topic: ${NTFY_TOPIC}`);
@@ -122,9 +122,6 @@ export async function runStalker() {
   fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2), 'utf8');
   console.log(`[Stalker Bot] Saved state.json. Finished run with ${totalNewSubmissions} new notifications.`);
   console.log(`==================================================`);
-  return { newSubmissions: totalNewSubmissions, handlesChecked: FRIENDS.length };
 }
 
-if (process.argv[1] && process.argv[1].endsWith('friend_stalker.mjs')) {
-  runStalker();
-}
+run();

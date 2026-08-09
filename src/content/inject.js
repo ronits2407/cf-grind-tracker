@@ -7,7 +7,7 @@ function init() {
   }
 
   // Prevent multiple injections
-  if (document.getElementById('cfgt-panel')) return;
+  if (document.getElementById('cfgt-panel') || document.getElementById('cfgt-panel-host')) return;
 
   const titleEl = document.querySelector('.title');
   const title = titleEl ? titleEl.textContent.trim() : 'Unknown Problem';

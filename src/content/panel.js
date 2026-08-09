@@ -14,11 +14,16 @@ window.CFGT_Panel = {
     this.problemData = problemData;
     this.data.rating = problemData.rating || 1200;
     
-    // Inject CSS
+    // Create Host Element for Shadow DOM isolation
+    const host = document.createElement('div');
+    host.id = 'cfgt-panel-host';
+    const shadow = host.attachShadow({ mode: 'open' });
+
+    // Inject CSS inside Shadow DOM
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = chrome.runtime.getURL('src/content/panel.css');
-    document.head.appendChild(link);
+    shadow.appendChild(link);
 
     // Create Main Container
     const panel = document.createElement('div');
@@ -52,8 +57,6 @@ window.CFGT_Panel = {
         <button class="cfgt-btn cfgt-btn-end cfgt-hidden" id="cfgt-btn-end">⏹ END SOLVE</button>
       </div>
 
-
-
       <div class="cfgt-footer" id="cfgt-footer">
         <div class="cfgt-checkboxes">
           <label class="cfgt-checkbox-label"><input type="checkbox" class="cfgt-checkbox" id="chk-indep" checked> Solved Independently</label>
@@ -69,7 +72,16 @@ window.CFGT_Panel = {
       </div>
     `;
     
-    container.parentNode.insertBefore(panel, container);
+    shadow.appendChild(panel);
+
+    // Insert host AFTER container (outside .problem-statement to avoid Codeforces DOM watchers)
+    if (container.nextSibling) {
+      container.parentNode.insertBefore(host, container.nextSibling);
+    } else {
+      container.parentNode.appendChild(host);
+    }
+
+    this.hostEl = host;
     this.panelEl = panel;
     
     this.bindEvents();
