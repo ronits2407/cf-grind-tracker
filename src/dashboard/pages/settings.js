@@ -35,7 +35,11 @@ const html = `
 </div>
 
 <div class="val-panel settings-section" style="margin-top: 20px;">
-  <h3>Polling & Rate Limits</h3>
+  <h3>Polling & Stalker Feature</h3>
+  <div style="display:flex; gap:10px; margin-top:15px; align-items:center;">
+    <label style="width: 200px;">Enable Local Stalker:</label>
+    <input type="checkbox" id="setting-enable-stalker" style="accent-color: var(--accent); width:20px; height:20px;">
+  </div>
   <div style="display:flex; gap:10px; margin-top:15px; align-items:center;">
     <label style="width: 200px;">Check Cycle Interval:</label>
     <select id="setting-poll-interval" class="val-select" style="flex:1;">
@@ -76,12 +80,13 @@ function addListener(el, type, handler) {
 
 async function loadSettings() {
   if(chrome && chrome.storage) {
-    chrome.storage.sync.get(['cfHandle', 'ntfyTopic', 'notifyBrowser', 'phoneNotifications', 'notifyAllVerdicts', 'pollIntervalMinutes', 'requestDelayMs'], (res) => {
+    chrome.storage.sync.get(['cfHandle', 'ntfyTopic', 'notifyBrowser', 'phoneNotifications', 'notifyAllVerdicts', 'enableStalker', 'pollIntervalMinutes', 'requestDelayMs'], (res) => {
       if(res.cfHandle) document.getElementById('setting-handle').value = res.cfHandle;
       if(res.ntfyTopic) document.getElementById('setting-ntfy').value = res.ntfyTopic;
       if(res.notifyBrowser !== undefined) document.getElementById('setting-notify-browser').checked = res.notifyBrowser;
       if(res.phoneNotifications !== undefined) document.getElementById('setting-notify-phone').checked = res.phoneNotifications;
       if(res.notifyAllVerdicts !== undefined) document.getElementById('setting-notify-all').checked = res.notifyAllVerdicts;
+      if(res.enableStalker !== undefined) document.getElementById('setting-enable-stalker').checked = res.enableStalker;
       if(res.pollIntervalMinutes) document.getElementById('setting-poll-interval').value = res.pollIntervalMinutes;
       if(res.requestDelayMs) document.getElementById('setting-request-delay').value = res.requestDelayMs;
     });
@@ -133,6 +138,7 @@ function init() {
   addListener(document.getElementById('setting-notify-browser'), 'change', (e) => saveSetting('notifyBrowser', e.target.checked));
   addListener(document.getElementById('setting-notify-phone'), 'change', (e) => saveSetting('phoneNotifications', e.target.checked));
   addListener(document.getElementById('setting-notify-all'), 'change', (e) => saveSetting('notifyAllVerdicts', e.target.checked));
+  addListener(document.getElementById('setting-enable-stalker'), 'change', (e) => saveSetting('enableStalker', e.target.checked));
   addListener(document.getElementById('setting-poll-interval'), 'change', (e) => saveSetting('pollIntervalMinutes', parseInt(e.target.value)));
   addListener(document.getElementById('setting-request-delay'), 'change', (e) => saveSetting('requestDelayMs', parseInt(e.target.value)));
   

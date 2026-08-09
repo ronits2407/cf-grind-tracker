@@ -4,6 +4,7 @@ const DEFAULT_SETTINGS = {
   browserNotifications: true,
   phoneNotifications: false,
   notifyAllVerdicts: false,
+  enableStalker: true,
   pollIntervalMinutes: 5,
   requestDelayMs: 1000,
   friendHandles: [],

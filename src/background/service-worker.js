@@ -96,6 +96,12 @@ async function checkSubmissions() {
 }
 
 async function checkFriendsActivity() {
+  const enableStalker = await settings.get('enableStalker');
+  if (enableStalker === false) {
+    console.log(`[CFGT Worker] Local stalker feature is disabled in settings. Skipping background friend polling.`);
+    return;
+  }
+
   const friends = [
     'ronits2407', 'Shridhar278', '_sreedevesh', 'kaustavbhowal', 'arjund0702',
     'ByteWarden', 'iamag47', 'Dweep007', 'Prachet1718', 'PriyanshuIITGHY2006',
