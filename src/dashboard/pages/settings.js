@@ -80,10 +80,10 @@ function addListener(el, type, handler) {
 
 async function loadSettings() {
   if(chrome && chrome.storage) {
-    chrome.storage.sync.get(['cfHandle', 'ntfyTopic', 'notifyBrowser', 'phoneNotifications', 'notifyAllVerdicts', 'enableStalker', 'pollIntervalMinutes', 'requestDelayMs'], (res) => {
+    chrome.storage.sync.get(['cfHandle', 'ntfyTopic', 'browserNotifications', 'phoneNotifications', 'notifyAllVerdicts', 'enableStalker', 'pollIntervalMinutes', 'requestDelayMs'], (res) => {
       if(res.cfHandle) document.getElementById('setting-handle').value = res.cfHandle;
       if(res.ntfyTopic) document.getElementById('setting-ntfy').value = res.ntfyTopic;
-      if(res.notifyBrowser !== undefined) document.getElementById('setting-notify-browser').checked = res.notifyBrowser;
+      if(res.browserNotifications !== undefined) document.getElementById('setting-notify-browser').checked = res.browserNotifications;
       if(res.phoneNotifications !== undefined) document.getElementById('setting-notify-phone').checked = res.phoneNotifications;
       if(res.notifyAllVerdicts !== undefined) document.getElementById('setting-notify-all').checked = res.notifyAllVerdicts;
       if(res.enableStalker !== undefined) document.getElementById('setting-enable-stalker').checked = res.enableStalker;
@@ -135,7 +135,7 @@ function init() {
   
   addListener(document.getElementById('setting-handle'), 'change', (e) => saveSetting('cfHandle', e.target.value));
   addListener(document.getElementById('setting-ntfy'), 'change', (e) => saveSetting('ntfyTopic', e.target.value));
-  addListener(document.getElementById('setting-notify-browser'), 'change', (e) => saveSetting('notifyBrowser', e.target.checked));
+  addListener(document.getElementById('setting-notify-browser'), 'change', (e) => saveSetting('browserNotifications', e.target.checked));
   addListener(document.getElementById('setting-notify-phone'), 'change', (e) => saveSetting('phoneNotifications', e.target.checked));
   addListener(document.getElementById('setting-notify-all'), 'change', (e) => saveSetting('notifyAllVerdicts', e.target.checked));
   addListener(document.getElementById('setting-enable-stalker'), 'change', (e) => saveSetting('enableStalker', e.target.checked));
