@@ -7,8 +7,6 @@ window.CFGT_Panel = {
     status: 'IDLE', // IDLE, SOLVING, PAUSED, COMPLETE
     elapsedSeconds: 0,
     wrongCount: 0,
-    mode: 'PRACTICE',
-    avgTime: 1200, // mock default 20 mins
     rating: 1200
   },
 
@@ -28,20 +26,12 @@ window.CFGT_Panel = {
     panel.innerHTML = `
       <div class="cfgt-header">
         <div class="cfgt-title"><span class="cfgt-logo">♦</span> CF GRIND TRACKER</div>
-        <div class="cfgt-tabs">
-          <button class="cfgt-tab" data-mode="LEARNING">LEARNING</button>
-          <button class="cfgt-tab active" data-mode="PRACTICE">PRACTICE</button>
-          <button class="cfgt-tab" data-mode="CONTEST">CONTEST</button>
-        </div>
       </div>
       
       <div class="cfgt-problem-info cfgt-confidence-medium">
         <div>
           <span class="cfgt-problem-name">${problemData.title}</span>
           <span class="cfgt-badge ${this.getRatingClass(this.data.rating)}">${this.data.rating ? '*' + this.data.rating : 'UNRATED'}</span>
-        </div>
-        <div class="cfgt-stats-preview">
-          Avg time: ~<span id="cfgt-avg-time">20:00</span>
         </div>
       </div>
 
@@ -62,10 +52,7 @@ window.CFGT_Panel = {
         <button class="cfgt-btn cfgt-btn-end cfgt-hidden" id="cfgt-btn-end">⏹ END SOLVE</button>
       </div>
 
-      <div class="cfgt-spi-preview">
-        <div>Predicted SPI: <span class="cfgt-spi-value" id="cfgt-spi-val">1.00</span></div>
-        <div class="cfgt-rating-change neutral" id="cfgt-rating-delta">Δ +0</div>
-      </div>
+
 
       <div class="cfgt-footer" id="cfgt-footer">
         <div class="cfgt-checkboxes">
@@ -78,7 +65,7 @@ window.CFGT_Panel = {
       </div>
       
       <div class="cfgt-success-banner" id="cfgt-success-banner">
-        <strong>SUCCESS!</strong> Solve recorded. SPI: <span id="cfgt-final-spi">1.00</span> | Rating: <span id="cfgt-final-rating">+0</span>
+        <strong>SUCCESS!</strong> Solve recorded.
       </div>
     `;
     
@@ -101,18 +88,6 @@ window.CFGT_Panel = {
   },
 
   bindEvents: function() {
-    // Mode tabs
-    const tabs = this.panelEl.querySelectorAll('.cfgt-tab');
-    tabs.forEach(tab => {
-      tab.addEventListener('click', (e) => {
-        tabs.forEach(t => t.classList.remove('active'));
-        e.target.classList.add('active');
-        this.data.mode = e.target.dataset.mode;
-        chrome.storage.sync.set({ defaultMode: this.data.mode });
-        this.updateSPI();
-      });
-    });
-
     // Buttons
     this.panelEl.querySelector('#cfgt-btn-start').addEventListener('click', () => this.startSolve());
     this.panelEl.querySelector('#cfgt-btn-pause').addEventListener('click', () => this.pauseSolve());
@@ -153,25 +128,7 @@ window.CFGT_Panel = {
   },
 
   loadSettings: function() {
-    chrome.storage.sync.get(['defaultMode'], (res) => {
-      if (res.defaultMode) {
-        this.data.mode = res.defaultMode;
-        const tabs = this.panelEl.querySelectorAll('.cfgt-tab');
-        tabs.forEach(t => {
-          t.classList.toggle('active', t.dataset.mode === res.defaultMode);
-        });
-      }
-    });
-    // Fetch avg solve time from background service worker
-    chrome.runtime.sendMessage({ type: 'GET_AVG_SOLVE_TIME', payload: { rating: this.data.rating } }, (response) => {
-      if (chrome.runtime.lastError) return; // extension context may not be ready
-      if (response && response.avgTime) {
-        this.data.avgTime = response.avgTime / 1000; // convert ms to seconds
-        const mins = Math.floor(this.data.avgTime / 60);
-        const secs = Math.floor(this.data.avgTime % 60);
-        this.panelEl.querySelector('#cfgt-avg-time').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-      }
-    });
+    // No specific panel settings to load anymore
   },
 
   startSolve: function() {
@@ -197,7 +154,6 @@ window.CFGT_Panel = {
         contestId: this.problemData.contestId,
         problemIndex: this.problemData.index,
         rating: this.problemData.rating,
-        mode: this.data.mode,
         startTime: this.data.startTime
       }
     });
@@ -266,14 +222,6 @@ window.CFGT_Panel = {
       this.panelEl.querySelector('#cfgt-footer').style.display = 'none';
       const banner = this.panelEl.querySelector('#cfgt-success-banner');
       banner.style.display = 'block';
-      
-      if (response && response.spi !== undefined) {
-        this.panelEl.querySelector('#cfgt-final-spi').textContent = response.spi.toFixed(2);
-        const deltaEl = this.panelEl.querySelector('#cfgt-final-rating');
-        const delta = response.ratingUpdate ? response.ratingUpdate.delta : 0;
-        deltaEl.textContent = (delta >= 0 ? '+' : '') + Math.round(delta);
-        deltaEl.className = delta >= 0 ? 'cfgt-rating-change positive' : 'cfgt-rating-change negative';
-      }
     });
   },
 
@@ -291,36 +239,5 @@ window.CFGT_Panel = {
     // WA Count — 20 min penalty per WA (ICPC style)
     this.panelEl.querySelector('#cfgt-wa-count').textContent = this.data.wrongCount;
     this.panelEl.querySelector('#cfgt-penalty-time').textContent = this.data.wrongCount * 20;
-    
-    this.updateSPI();
-  },
-
-  updateSPI: function() {
-    // Basic SPI calculation preview
-    if (this.data.elapsedSeconds === 0) return;
-    
-    let solveTime = this.data.elapsedSeconds + (this.data.wrongCount * 600);
-    if (solveTime <= 0) solveTime = 1;
-    
-    let timeRatio = this.data.avgTime / solveTime;
-    
-    let modeMultiplier = 1.0;
-    if (this.data.mode === 'CONTEST') modeMultiplier = 1.2;
-    if (this.data.mode === 'LEARNING') modeMultiplier = 0.5;
-    
-    let penalty = Math.pow(0.9, this.data.wrongCount);
-    
-    let spi = timeRatio * modeMultiplier * penalty;
-    
-    const k = 32;
-    let delta = Math.round(k * (spi - 1.0) * modeMultiplier);
-    
-    const spiEl = this.panelEl.querySelector('#cfgt-spi-val');
-    spiEl.textContent = spi.toFixed(2);
-    
-    const deltaEl = this.panelEl.querySelector('#cfgt-rating-delta');
-    deltaEl.textContent = 'Δ ' + (delta >= 0 ? '+' : '') + delta;
-    
-    deltaEl.className = 'cfgt-rating-change ' + (delta > 0 ? 'positive' : (delta < 0 ? 'negative' : 'neutral'));
   }
 };

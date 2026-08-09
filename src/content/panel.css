@@ -47,35 +47,7 @@
   font-size: 16px;
 }
 
-.cfgt-tabs {
-  display: flex;
-  gap: 4px;
-}
 
-.cfgt-tab {
-  background: var(--cfgt-surface);
-  color: var(--cfgt-muted);
-  border: 1px solid transparent;
-  padding: 6px 14px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
-}
-
-.cfgt-tab:hover {
-  color: var(--cfgt-text);
-  border-color: var(--cfgt-muted);
-}
-
-.cfgt-tab.active {
-  background: var(--cfgt-accent);
-  color: #fff;
-  border-color: var(--cfgt-accent);
-}
 
 /* Problem Info */
 .cfgt-problem-info {
@@ -110,14 +82,7 @@
 .cfgt-rating-orange { background: #ff8c00; color: #fff; }
 .cfgt-rating-red { background: #cc0000; color: #fff; }
 
-.cfgt-stats-preview {
-  font-size: 12px;
-  color: var(--cfgt-muted);
-}
 
-.cfgt-confidence-high .cfgt-stats-preview::after { content: ' ● HIGH'; color: var(--cfgt-green); font-weight: 700; font-size: 10px; }
-.cfgt-confidence-medium .cfgt-stats-preview::after { content: ' ● MED'; color: var(--cfgt-yellow); font-weight: 700; font-size: 10px; }
-.cfgt-confidence-low .cfgt-stats-preview::after { content: ' ● LOW'; color: var(--cfgt-accent); font-weight: 700; font-size: 10px; }
 
 /* Timer Section */
 .cfgt-timer-section {
@@ -243,31 +208,7 @@
   display: none !important;
 }
 
-/* SPI Preview */
-.cfgt-spi-preview {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 16px;
-  background: rgba(26, 38, 52, 0.5);
-  font-size: 13px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
 
-.cfgt-spi-value {
-  color: var(--cfgt-green);
-  font-weight: 700;
-  font-size: 15px;
-}
-
-.cfgt-rating-change {
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.cfgt-rating-change.positive { color: var(--cfgt-green); }
-.cfgt-rating-change.negative { color: var(--cfgt-accent); }
-.cfgt-rating-change.neutral { color: var(--cfgt-muted); }
 
 /* Footer / Checkboxes */
 #cfgt-footer {

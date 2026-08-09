@@ -1,7 +1,6 @@
 import { DB } from '../storage/db.js';
 import { Settings } from '../storage/settings.js';
-import { calculateSPI, getAvgSolveTime } from '../engine/spi.js';
-import { applyRatingChange } from '../engine/rating.js';
+
 import { showBrowserNotification } from '../notifications/browser.js';
 import { sendNtfyNotification } from '../notifications/ntfy.js';
 
@@ -160,51 +159,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse({ status: 'ok' });
   } else if (message.type === 'GET_SOLVE_STATUS') {
     sendResponse({ currentSolve });
-  } else if (message.type === 'GET_AVG_SOLVE_TIME') {
-    getAvgSolveTime(message.payload.rating, db).then(sendResponse);
-    return true;
-  } else if (message.type === 'CALCULATE_SPI') {
-    calculateSPI(
-      message.payload.rating, 
-      message.payload.solveTime, 
-      message.payload.wrongSubmissions, 
-      message.payload.aiUsed, 
-      db
-    ).then(sendResponse);
-    return true;
   } else if (message.type === 'COMPLETE_SOLVE') {
     (async () => {
       const { problemData, solveData } = message.payload;
-      const currentRating = await settings.get('rating');
-      const kFactor = await settings.get('kFactor');
-      
-      const spi = await calculateSPI(problemData.rating, solveData.solveTime, solveData.wrongSubmissions, solveData.aiUsed, db);
-      
-      const ratingUpdate = applyRatingChange(currentRating, spi, problemData.mode, kFactor);
-      
-      await settings.set('rating', ratingUpdate.newRating);
       
       await db.addProblem({
         ...problemData,
-        ...solveData,
-        spi,
-        ratingDelta: ratingUpdate.delta
-      });
-      
-      await db.addRatingHistory({
-        ratingBefore: currentRating,
-        ratingAfter: ratingUpdate.newRating,
-        delta: ratingUpdate.delta,
-        reason: `Solved ${problemData.problemId}`
+        ...solveData
       });
       
       currentSolve = null;
       
-      if (ratingUpdate.rankChanged) {
-        showBrowserNotification('Rank Update!', `You are now ${ratingUpdate.rankAfter.name}!`);
-      }
-      
-      sendResponse({ status: 'ok', ratingUpdate, spi });
+      sendResponse({ status: 'ok' });
     })();
     return true;
   } else if (message.type === 'SEND_NTFY') {

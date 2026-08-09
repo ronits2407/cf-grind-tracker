@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <polygon points="50,10 90,50 50,90 10,50" fill="#F8C23A" />
-  <polygon points="50,20 80,50 50,80 20,50" fill="#1A2634" />
-  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="16" fill="#F8C23A">GOLD</text>
-</svg>

@@ -1,14 +1,9 @@
 import { DB } from '../storage/db.js';
 import { Settings } from '../storage/settings.js';
-import { getRank, getRankProgress } from '../engine/rating.js';
-
 import overviewPage from './pages/overview.js';
 import modeStatsPage from './pages/mode-stats.js';
 import ratingBreakdownPage from './pages/rating-breakdown.js';
 import problemHistoryPage from './pages/problem-history.js';
-import achievementsPage from './pages/achievements.js';
-import icpcContestsPage from './pages/icpc-contests.js';
-import practiceListPage from './pages/practice-list.js';
 import friendsPage from './pages/friends.js';
 import settingsPage from './pages/settings.js';
 
@@ -17,9 +12,6 @@ const pages = {
   'mode-stats': modeStatsPage,
   'rating-breakdown': ratingBreakdownPage,
   'problem-history': problemHistoryPage,
-  'achievements': achievementsPage,
-  'icpc-contests': icpcContestsPage,
-  'practice-list': practiceListPage,
   'friends': friendsPage,
   'settings': settingsPage
 };
@@ -31,15 +23,13 @@ window.cfgtDB = db;
 window.cfgtSettings = settings;
 
 window.cfgtState = {
-  rating: 1200,
-  rank: 'SILVER 1'
+  cfHandle: 'Guest'
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
   await db.openDB();
 
-  window.cfgtState.rating = (await settings.get('rating')) || 1200;
-  window.cfgtState.rank = getRank(window.cfgtState.rating).name;
+  window.cfgtState.cfHandle = (await settings.get('cfHandle')) || 'Guest';
 
   updateSidebar();
 
@@ -60,14 +50,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function updateSidebar() {
-  document.getElementById('sidebar-rating').textContent = `${window.cfgtState.rating} RR`;
-  document.getElementById('sidebar-rank-name').textContent = window.cfgtState.rank;
-  
-  // Extract first letters for badge e.g. "SILVER 1" -> "S1"
-  const rankParts = window.cfgtState.rank.split(' ');
-  let badgeText = rankParts[0].charAt(0);
-  if (rankParts.length > 1) badgeText += rankParts[1];
-  document.getElementById('sidebar-rank-icon').textContent = badgeText;
+  document.getElementById('sidebar-rating').textContent = '';
+  document.getElementById('sidebar-rank-name').textContent = window.cfgtState.cfHandle;
+  document.getElementById('sidebar-rank-icon').textContent = window.cfgtState.cfHandle.charAt(0).toUpperCase();
 }
 
 async function navigateTo(pageId) {

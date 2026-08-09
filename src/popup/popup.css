@@ -57,17 +57,7 @@ body {
   letter-spacing: 1px;
 }
 
-.rating-info {
-  display: flex;
-  gap: 12px;
-  font-size: 0.9rem;
-  color: var(--val-text-dim);
-}
 
-.rating {
-  color: var(--val-accent);
-  font-weight: 700;
-}
 
 .stats-grid {
   display: grid;
