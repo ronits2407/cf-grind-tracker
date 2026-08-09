@@ -1,5 +1,5 @@
 const html = `
-<div class="page-header">
+<div class="page-header" style="margin-bottom: 24px;">
   <h2>Problem History</h2>
   <div class="header-actions">
     <button id="export-json-btn" class="btn btn-primary">Export JSON</button>
@@ -100,7 +100,12 @@ function renderTable() {
   
   pageItems.forEach(p => {
     const tr = document.createElement('tr');
-    
+    tr.innerHTML = `
+      <td><a href="https://codeforces.com/contest/${p.contestId}/problem/${p.index}" target="_blank" style="color:var(--text); text-decoration:underline;">${p.name || (p.contestId ? p.contestId + p.index : p.problemId)}</a></td>
+      <td><span class="rating-badge">${p.rating || '?'}</span></td>
+      <td>${p.mode || 'practice'}</td>
+      <td>${formatTime(p.solveTime / 1000)}</td>
+      <td>${p.wrongSubmissions || p.waCount || 0}</td>
       <td>${p.aiUsed ? '✓' : '✗'}</td>
       <td>${formatDate(p.timestamp)}</td>
     `;
