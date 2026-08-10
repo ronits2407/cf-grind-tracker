@@ -25,7 +25,7 @@ jobs:
       - name: Run Friend Stalker Script
         env:
           NTFY_TOPIC: 'cf-grind-gzn84omyxtxx'
-          NTFY_TOKEN: ${{ secrets.NTFY_TOKEN || 'tk_lgbthqe3ldnhpln6blr2ho56qpc0b' }}
+          NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}
         run: node scripts/friend_stalker.mjs
 
       - name: Commit state changes
