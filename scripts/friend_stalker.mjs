@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename);
 const STATE_FILE = path.join(__dirname, 'state.json');
 
 const NTFY_TOPIC = process.env.NTFY_TOPIC || 'cf-grind-gzn84omyxtxx';
-const NTFY_TOKEN = process.env.NTFY_TOKEN || 'tk_lgbthqe3ldnhpln6blr2ho56qpc0b';
+const NTFY_TOKEN = process.env.NTFY_TOKEN || '';
 
 const FRIENDS = [
   'ronits2407', 'Shridhar278', '_sreedevesh', 'kaustavbhowal', 'arjund0702',
@@ -23,9 +23,12 @@ async function sendNtfy(title, body) {
   try {
     const headers = {
       'Title': title,
-      'Priority': 'default',
-      'Authorization': `Bearer ${NTFY_TOKEN}`
+      'Priority': 'default'
     };
+    
+    if (NTFY_TOKEN) {
+      headers['Authorization'] = `Bearer ${NTFY_TOKEN}`;
+    }
     const res = await fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
       method: 'POST',
       body: body,

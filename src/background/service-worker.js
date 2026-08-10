@@ -127,7 +127,7 @@ async function checkFriendsActivity() {
   const recentActivities = await db.getFriendActivity(1000);
   console.log(`[CFGT Worker] Loaded ${recentActivities.length} existing activity records from IndexedDB`);
   
-  const ntfyToken = 'tk_lgbthqe3ldnhpln6blr2ho56qpc0b';
+  const ntfyToken = '';
   const ntfyTopic = await settings.get('ntfyTopic');
   const phoneNotifications = await settings.get('phoneNotifications');
   const browserNotifications = await settings.get('browserNotifications');
